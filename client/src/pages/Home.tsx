@@ -204,7 +204,6 @@ export default function Home() {
               <div className="border p-4 rounded-md">
                 <h4 className="font-medium text-[#1D3354] mb-2">Maintainability Headers</h4>
                 <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
-                  <li>X-Powered-By</li>
                   <li>Server</li>
                   <li>X-Runtime</li>
                   <li>X-Request-ID</li>

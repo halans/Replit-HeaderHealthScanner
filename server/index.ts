@@ -56,8 +56,8 @@ app.use(helmet({
 
 // Add custom headers
 app.use((req, res, next) => {
-  // Customize the X-Powered-By header
-  res.setHeader('X-Powered-By', 'HTTP Header Analyzer');
+  // Ensure X-Powered-By is removed for security
+  res.removeHeader('X-Powered-By');
   
   // Add performance headers
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
