@@ -141,17 +141,4 @@ export function SkeletonCloudflareHeaders() {
   );
 }
 
-export function SkeletonServerTiming() {
-  return (
-    <div className="bg-white rounded-lg shadow-lg p-8 mt-8 border-b-4 border-[#36382E] animate-pulse">
-      <Skeleton className="h-8 w-2/5 mb-3" />
-      <Skeleton className="h-5 w-3/4 mb-6" />
-      
-      <div className="space-y-3">
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-5 w-3/5" />
-        <Skeleton className="h-5 w-2/3" />
-      </div>
-    </div>
-  );
-}
+// SkeletonServerTiming component removed as requested

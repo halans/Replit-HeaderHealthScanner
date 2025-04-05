@@ -9,14 +9,12 @@ import OverallScore from "@/components/OverallScore";
 import HeaderAnalysisSection from "@/components/HeaderAnalysisSection";
 import RawHeadersSection from "@/components/RawHeadersSection";
 import CloudflareHeadersSection from "@/components/CloudflareHeadersSection";
-import ServerTimingSection from "@/components/ServerTimingSection";
 import { generateSummary } from "@/lib/score-calculator";
 import { 
   SkeletonOverallScore, 
   SkeletonHeaderAnalysis, 
   SkeletonRawHeaders, 
-  SkeletonCloudflareHeaders,
-  SkeletonServerTiming 
+  SkeletonCloudflareHeaders 
 } from "@/components/SkeletonLoading";
 
 interface AnalysisResult {
@@ -154,16 +152,7 @@ export default function Home() {
             <CloudflareHeadersSection cloudflareHeaders={result.cloudflareHeaders} />
           )}
           
-          {/* Server-Timing Section - Always show if rawHeaders exist */}
-          {result.scan.rawHeaders && (
-            <ServerTimingSection 
-              serverTiming={
-                (result.scan.rawHeaders as Record<string, string>)['server-timing'] || 
-                (result.scan.rawHeaders as Record<string, string>)['Server-Timing'] || 
-                'app;dur=0'
-              } 
-            />
-          )}
+          {/* Server-Timing Section removed as requested */}
           
           <RawHeadersSection headers={result.scan.rawHeaders as Record<string, string>} />
         </>
