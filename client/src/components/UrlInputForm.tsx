@@ -44,18 +44,20 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
                     Enter website URL to analyze:
                   </FormLabel>
                   <FormControl>
-                    <div className="mt-1 flex rounded-md shadow-md">
-                      <span className="inline-flex items-center px-4 rounded-l-md border border-r-0 border-[#1D3354] bg-[#E9FFF9] text-[#1D3354]/70 text-sm font-medium">
-                        https://
-                      </span>
-                      <Input
-                        placeholder="example.com"
-                        className="flex-1 block w-full rounded-none rounded-r-md bg-white border-[#1D3354] focus:ring-[#1D3354] focus:border-[#1D3354] py-2 px-4 text-[#1D3354]"
-                        {...field}
-                      />
+                    <div className="relative">
+                      <div className="mt-1 flex rounded-md shadow-md">
+                        <span className="inline-flex items-center px-4 rounded-l-md border border-r-0 border-[#1D3354] bg-[#E9FFF9] text-[#1D3354]/70 text-sm font-medium">
+                          https://
+                        </span>
+                        <Input
+                          placeholder="example.com"
+                          className="flex-1 block w-full rounded-none rounded-r-md bg-white border-[#1D3354] focus:ring-[#1D3354] focus:border-[#1D3354] py-2 px-4 text-[#1D3354]"
+                          {...field}
+                        />
+                      </div>
                     </div>
-                    <FormMessage className="mt-2 text-sm text-red-600" />
                   </FormControl>
+                  <FormMessage className="mt-2 text-sm text-red-600" />
                 </FormItem>
               )}
             />
