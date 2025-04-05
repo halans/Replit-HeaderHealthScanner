@@ -1,0 +1,107 @@
+import * as React from "react";
+import { cn } from "@/lib/utils";
+
+interface CircularProgressProps {
+  value: number;
+  size?: "sm" | "md" | "lg";
+  color?: string;
+  showPercentage?: boolean;
+  showGrade?: boolean;
+  className?: string;
+  thickness?: number;
+  children?: React.ReactNode;
+}
+
+export function CircularProgress({
+  value,
+  size = "md",
+  color = "stroke-primary-600",
+  showPercentage = true,
+  showGrade = false,
+  className,
+  thickness = 2.8,
+  children,
+}: CircularProgressProps) {
+  const sizesMap = {
+    sm: "w-[60px] h-[60px]",
+    md: "w-[100px] h-[100px]",
+    lg: "w-[150px] h-[150px]",
+  };
+
+  const fontSizeMap = {
+    sm: "text-xl",
+    md: "text-3xl",
+    lg: "text-4xl",
+  };
+
+  const getGrade = (score: number): string => {
+    if (score >= 90) return "A";
+    if (score >= 80) return "B";
+    if (score >= 70) return "C";
+    if (score >= 60) return "D";
+    if (score >= 50) return "E";
+    return "F";
+  };
+
+  const getGradeModifier = (grade: string): string => {
+    const score = value;
+    
+    if (grade === "A") {
+      if (score >= 97) return "+";
+      if (score < 93) return "-";
+    } else if (grade !== "F") {
+      if (score % 10 >= 7) return "+";
+      if (score % 10 < 3) return "-";
+    }
+    
+    return "";
+  };
+
+  const grade = getGrade(value);
+  const gradeModifier = getGradeModifier(grade);
+  const gradeDisplay = `${grade}${gradeModifier}`;
+
+  return (
+    <div
+      className={cn(
+        "relative inline-flex items-center justify-center",
+        sizesMap[size],
+        className
+      )}
+    >
+      <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+        <path
+          className={`stroke-[${thickness}] stroke-slate-200 fill-none`}
+          d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <path
+          className={`stroke-[${thickness}] ${color} fill-none`}
+          strokeDasharray={`${value}, 100`}
+          d="M18 2.0845
+            a 15.9155 15.9155 0 0 1 0 31.831
+            a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        {children ? (
+          children
+        ) : (
+          <>
+            {showGrade && (
+              <div className={cn(fontSizeMap[size], "font-bold", color.replace("stroke-", "text-"))}>
+                {gradeDisplay}
+              </div>
+            )}
+            {showPercentage && (
+              <div className="text-sm text-slate-500">
+                {value}/100
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
