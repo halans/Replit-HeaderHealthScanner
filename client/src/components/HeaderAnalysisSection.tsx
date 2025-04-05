@@ -344,28 +344,28 @@ export default function HeaderAnalysisSection({
     <div className="bg-white rounded-lg shadow-lg overflow-hidden border-b-4 border-[#5BC3EB] card-hover">
       <Tabs defaultValue="security">
         <div className="border-b border-[#DADAD9] bg-gradient-to-r from-[#F06449]/5 to-[#5BC3EB]/5">
-          <TabsList className="bg-transparent border-b-0 p-3 w-full flex justify-start">
+          <TabsList className="grid grid-cols-3 w-full bg-transparent p-0">
             <TabsTrigger 
               value="security" 
               className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
-                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
-                rounded-t-lg border-b-2 border-transparent mr-2"
+                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
+                rounded-t-lg border-b-2 border-transparent"
             >
               Security
             </TabsTrigger>
             <TabsTrigger 
               value="performance" 
               className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
-                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
-                rounded-t-lg border-b-2 border-transparent mr-2"
+                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
+                rounded-t-lg border-b-2 border-transparent"
             >
               Performance
             </TabsTrigger>
             <TabsTrigger 
               value="maintainability" 
               className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
-                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
-                rounded-t-lg border-b-2 border-transparent"
+                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
+                rounded-t-lg border-b-2 border-transparent min-w-0 truncate"
             >
               Maintainability
             </TabsTrigger>
