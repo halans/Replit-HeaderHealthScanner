@@ -2,8 +2,34 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    let errorText = '';
+    try {
+      // Try to parse response as JSON first
+      const errorData = await res.json();
+      errorText = errorData.message || JSON.stringify(errorData);
+    } catch (e) {
+      // If not JSON, get text content
+      try {
+        errorText = await res.text();
+      } catch (textError) {
+        // Fallback to status text if text extraction fails
+        errorText = res.statusText;
+      }
+    }
+    
+    // Map status codes to friendly error messages
+    const statusMessages: Record<number, string> = {
+      400: 'Bad request: The server could not understand your request.',
+      401: 'Unauthorized: You need to be logged in to access this resource.',
+      403: 'Forbidden: You don\'t have permission to access this resource.',
+      404: 'Not found: The requested resource could not be found.',
+      429: 'Too many requests: Please try again later.',
+      500: 'Server error: Something went wrong on our end.',
+      503: 'Service unavailable: The server is temporarily down.',
+    };
+    
+    const friendlyMessage = statusMessages[res.status] || `Error ${res.status}`;
+    throw new Error(`${friendlyMessage} ${errorText ? `- ${errorText}` : ''}`);
   }
 }
 

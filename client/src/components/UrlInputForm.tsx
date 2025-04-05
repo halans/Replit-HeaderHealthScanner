@@ -52,7 +52,14 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
                         <Input
                           placeholder="example.com"
                           className="flex-1 block w-full rounded-none rounded-r-md bg-white border-[#1D3354] focus:ring-[#1D3354] focus:border-[#1D3354] py-2 px-4 text-[#1D3354]"
-                          {...field}
+                          onChange={(e) => {
+                            // Remove any https:// or http:// prefix for better UX
+                            const value = e.target.value.replace(/^https?:\/\//i, '');
+                            field.onChange(value);
+                          }}
+                          value={field.value}
+                          onBlur={field.onBlur}
+                          name={field.name}
                         />
                       </div>
                     </FormControl>

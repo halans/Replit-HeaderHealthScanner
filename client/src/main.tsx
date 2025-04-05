@@ -9,7 +9,7 @@ document.title = "HTTP Header Analyzer";
 const metaTags = [
   { name: "description", content: "Analyze and visualize HTTP header best practices for security, performance, and maintainability" },
   { name: "viewport", content: "width=device-width, initial-scale=1.0, maximum-scale=1" },
-  { name: "theme-color", content: "#3b82f6" },
+  { name: "theme-color", content: "#1D3354" },
   // Add security headers as meta tags
   { "http-equiv": "Content-Security-Policy", content: "default-src 'self'; script-src 'self' https://replit.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https:;" },
   { "http-equiv": "X-Content-Type-Options", content: "nosniff" },

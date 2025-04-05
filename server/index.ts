@@ -117,9 +117,13 @@ app.use((req, res, next) => {
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
-  // Set the Server-Timing header before the response is sent
-  res.setHeader('Server-Timing', 'app;desc="HTTP Header Analyzer";dur=0');
-
+  // Initialize the Server-Timing header
+  let serverTimingValue = `app;desc="HTTP Header Analyzer"`;
+  
+  // Set initial timing header
+  res.setHeader('Server-Timing', serverTimingValue);
+  
+  // We can't modify headers after they're sent, so we'll just log the duration
   res.on("finish", () => {
     const duration = Date.now() - start;
     
