@@ -80,26 +80,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analyze Headers Route
   app.post("/api/analyze", async (req, res) => {
     console.log("Received analyze request with body:", req.body);
+    
+    // Track timing metrics for Server-Timing header
+    const startTime = Date.now();
+    const timings: Record<string, number> = {};
+    
+    // Helper function to record operation timing
+    const time = async <T>(name: string, fn: () => Promise<T>): Promise<T> => {
+      const opStart = Date.now();
+      try {
+        return await fn();
+      } finally {
+        timings[name] = Date.now() - opStart;
+      }
+    };
+    
     try {
       // Validate the URL from the request body
       // The urlSchema now handles URL transformation
-      const { url } = urlSchema.parse(req.body);
+      const { url } = await time('validation', async () => urlSchema.parse(req.body));
       console.log("Validated URL:", url);
       const fullUrl = url;
       
       // Fetch the headers from the URL
       try {
         // First make a request to detect HTTP protocol version
-        const protocolInfo = await detectHttpProtocol(fullUrl);
+        const protocolInfo = await time('protocol-detection', async () => detectHttpProtocol(fullUrl));
         
         // Now fetch the headers
-        const response = await fetch(fullUrl, {
+        const response = await time('fetch-headers', async () => fetch(fullUrl, {
           method: 'HEAD',
           headers: {
             'User-Agent': 'HTTPHeaderAnalyzer/1.0'
           },
           redirect: 'follow'
-        });
+        }));
         
         // Extract and format the headers
         const headers: Record<string, string> = {};
@@ -114,12 +129,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         // Calculate scores with weighted importance
-        const securityHeaders = calculateSecurityScore(headers);
-        const performanceHeaders = calculatePerformanceScore(headers);
-        const maintainabilityHeaders = calculateMaintainabilityScore(headers);
-        
-        // Check for Cloudflare headers
-        const cloudflareHeaders = analyzeCloudflareHeaders(headers);
+        const { securityHeaders, performanceHeaders, maintainabilityHeaders, cloudflareHeaders } = 
+          await time('score-calculation', async () => {
+            const securityHeaders = calculateSecurityScore(headers);
+            const performanceHeaders = calculatePerformanceScore(headers);
+            const maintainabilityHeaders = calculateMaintainabilityScore(headers);
+            const cloudflareHeaders = analyzeCloudflareHeaders(headers);
+            return { securityHeaders, performanceHeaders, maintainabilityHeaders, cloudflareHeaders };
+          });
         
         // Calculate overall score with weighted importance
         const overallScore = Math.round(
@@ -147,7 +164,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         };
         
         // Save the record
-        const savedHeaderScan = await storage.saveHeaderScan(headerScan);
+        const savedHeaderScan = await time('db-storage', async () => storage.saveHeaderScan(headerScan));
+        
+        // Generate Server-Timing header with detailed metrics
+        const totalTime = Date.now() - startTime;
+        let serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=${totalTime}`;
+        
+        // Add individual operation timings
+        Object.entries(timings).forEach(([name, duration]) => {
+          serverTimingHeader += `, ${name};dur=${duration};desc="${name.replace(/-/g, ' ')}"`;
+        });
+        
+        // Set the Server-Timing header with detailed metrics
+        res.setHeader('Server-Timing', serverTimingHeader);
         
         // Return the analysis to the client
         res.json({
@@ -181,16 +210,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Health check route
   app.get("/api/health", (req, res) => {
+    const start = Date.now();
+    
+    // Set a simple Server-Timing header for the health check
+    const serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=0, health-check;dur=${Date.now() - start};desc="Health Check"`;
+    res.setHeader('Server-Timing', serverTimingHeader);
+    
     res.json({ status: "ok" });
   });
   
   // Self-check route - analyze our own headers
   app.get("/api/self-check", (req, res) => {
+    // Track timing metrics
+    const startTime = Date.now();
+    const timings: Record<string, number> = {};
+    
+    // Helper function to record operation timing
+    const time = async <T>(name: string, fn: () => Promise<T>): Promise<T> => {
+      const opStart = Date.now();
+      try {
+        return await fn();
+      } finally {
+        timings[name] = Date.now() - opStart;
+      }
+    };
+    
     // Create a new response object to send to ourselves
     const url = `http://localhost:5000${req.originalUrl}`;
     
     // Short circuit to prevent infinite recursion
     if (req.headers['x-self-check'] === 'true') {
+      const selfCheckStart = Date.now();
+      
       const headers = { ...res.getHeaders() as Record<string, string> };
       
       // Need to explicitly set Content-Type, Content-Encoding and Transfer-Encoding
@@ -206,14 +257,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       headers['transfer-encoding'] = 'chunked';
       
       // Calculate scores using our explicitly enhanced headers
+      const analysisStart = Date.now();
       const securityHeaders = calculateSecurityScore(headers);
       const performanceHeaders = calculatePerformanceScore(headers);
       const maintainabilityHeaders = calculateMaintainabilityScore(headers);
+      const analysisDuration = Date.now() - analysisStart;
       
       // Calculate overall score
       const overallScore = Math.round(
         (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
       );
+      
+      // Generate Server-Timing header with metrics
+      const selfCheckDuration = Date.now() - selfCheckStart;
+      const totalTime = Date.now() - startTime;
+      
+      // Set Server-Timing header with detailed metrics
+      const serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=${totalTime}, ` +
+                               `self-check;dur=${selfCheckDuration};desc="Self Check", ` +
+                               `analysis;dur=${analysisDuration};desc="Score Analysis"`;
+      
+      res.setHeader('Server-Timing', serverTimingHeader);
       
       // Return our own header analysis
       res.json({
@@ -235,50 +299,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     // Make an actual request to ourselves to capture all headers
-    fetch(url, {
-      headers: {
-        'X-Self-Check': 'true',
-        'Accept-Encoding': 'gzip'
+    (async () => {
+      try {
+        // Fetch our own headers
+        const response = await time('fetch-self', async () => 
+          fetch(url, {
+            headers: {
+              'X-Self-Check': 'true',
+              'Accept-Encoding': 'gzip'
+            }
+          })
+        );
+        
+        // Extract all headers from the response
+        const headers: Record<string, string> = {};
+        response.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+        
+        // Calculate scores with the complete set of headers
+        const { securityHeaders, performanceHeaders, maintainabilityHeaders } = 
+          await time('score-calculation', async () => {
+            const securityHeaders = calculateSecurityScore(headers);
+            const performanceHeaders = calculatePerformanceScore(headers);
+            const maintainabilityHeaders = calculateMaintainabilityScore(headers);
+            return { securityHeaders, performanceHeaders, maintainabilityHeaders };
+          });
+        
+        // Calculate overall score
+        const overallScore = Math.round(
+          (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
+        );
+        
+        // Generate Server-Timing header with detailed metrics
+        const totalTime = Date.now() - startTime;
+        let serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=${totalTime}`;
+        
+        // Add individual operation timings
+        Object.entries(timings).forEach(([name, duration]) => {
+          serverTimingHeader += `, ${name};dur=${duration};desc="${name.replace(/-/g, ' ')}"`;
+        });
+        
+        // Set the Server-Timing header with detailed metrics
+        res.setHeader('Server-Timing', serverTimingHeader);
+        
+        // Return the full header analysis
+        res.json({
+          appName: "HTTP Header Analyzer",
+          rawHeaders: headers,
+          securityScore: securityHeaders.score,
+          performanceScore: performanceHeaders.score,
+          maintainabilityScore: maintainabilityHeaders.score,
+          overallScore,
+          securityGrade: getGrade(securityHeaders.score),
+          performanceGrade: getGrade(performanceHeaders.score),
+          maintainabilityGrade: getGrade(maintainabilityHeaders.score),
+          overallGrade: getGrade(overallScore),
+          securityHeaders: securityHeaders.details,
+          performanceHeaders: performanceHeaders.details,
+          maintainabilityHeaders: maintainabilityHeaders.details
+        });
+      } catch (error) {
+        console.error('Error in self-check request:', error);
+        res.status(500).json({ message: 'Error performing self-check' });
       }
-    })
-    .then(response => {
-      // Extract all headers from the response
-      const headers: Record<string, string> = {};
-      response.headers.forEach((value, key) => {
-        headers[key] = value;
-      });
-      
-      // Calculate scores with the complete set of headers
-      const securityHeaders = calculateSecurityScore(headers);
-      const performanceHeaders = calculatePerformanceScore(headers);
-      const maintainabilityHeaders = calculateMaintainabilityScore(headers);
-      
-      // Calculate overall score
-      const overallScore = Math.round(
-        (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
-      );
-      
-      // Return the full header analysis
-      res.json({
-        appName: "HTTP Header Analyzer",
-        rawHeaders: headers,
-        securityScore: securityHeaders.score,
-        performanceScore: performanceHeaders.score,
-        maintainabilityScore: maintainabilityHeaders.score,
-        overallScore,
-        securityGrade: getGrade(securityHeaders.score),
-        performanceGrade: getGrade(performanceHeaders.score),
-        maintainabilityGrade: getGrade(maintainabilityHeaders.score),
-        overallGrade: getGrade(overallScore),
-        securityHeaders: securityHeaders.details,
-        performanceHeaders: performanceHeaders.details,
-        maintainabilityHeaders: maintainabilityHeaders.details
-      });
-    })
-    .catch(error => {
-      console.error('Error in self-check request:', error);
-      res.status(500).json({ message: 'Error performing self-check' });
-    });
+    })();
   });
 
   const httpServer = createServer(app);

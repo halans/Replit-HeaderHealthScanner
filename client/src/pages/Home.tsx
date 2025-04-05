@@ -9,6 +9,7 @@ import OverallScore from "@/components/OverallScore";
 import HeaderAnalysisSection from "@/components/HeaderAnalysisSection";
 import RawHeadersSection from "@/components/RawHeadersSection";
 import CloudflareHeadersSection from "@/components/CloudflareHeadersSection";
+import ServerTimingSection from "@/components/ServerTimingSection";
 import { generateSummary } from "@/lib/score-calculator";
 
 interface AnalysisResult {
@@ -124,6 +125,11 @@ export default function Home() {
             <CloudflareHeadersSection cloudflareHeaders={result.cloudflareHeaders} />
           )}
           
+          {/* Server-Timing Section - Only show if server-timing header is present */}
+          {result.scan.rawHeaders && (result.scan.rawHeaders as Record<string, string>)['server-timing'] && (
+            <ServerTimingSection serverTiming={(result.scan.rawHeaders as Record<string, string>)['server-timing']} />
+          )}
+          
           <RawHeadersSection headers={result.scan.rawHeaders as Record<string, string>} />
         </>
       )}
@@ -192,6 +198,7 @@ export default function Home() {
                   <li>Vary</li>
                   <li>Content-Encoding</li>
                   <li>Transfer-Encoding</li>
+                  <li>Server-Timing</li>
                 </ul>
               </div>
               <div className="border p-4 rounded-md">
@@ -232,6 +239,14 @@ export default function Home() {
                    target="_blank" 
                    rel="noreferrer noopener">
                   SecurityHeaders.com
+                </a>
+              </li>
+              <li>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server-Timing" 
+                   className="text-[#F06449] hover:underline" 
+                   target="_blank" 
+                   rel="noreferrer noopener">
+                  Server-Timing Header Documentation
                 </a>
               </li>
             </ul>

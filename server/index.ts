@@ -77,9 +77,6 @@ app.use((req, res, next) => {
   // res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
   // res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
   
-  // Add server timing header for better performance analysis
-  res.setHeader('Server-Timing', 'app;dur=0');
-  
   // Add more maintainability headers
   res.setHeader('X-Request-ID', crypto.randomUUID());
   
@@ -119,13 +116,12 @@ app.use((req, res, next) => {
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
+  // Set the Server-Timing header before the response is sent
+  res.setHeader('Server-Timing', 'app;desc="HTTP Header Analyzer";dur=0');
+
   res.on("finish", () => {
     const duration = Date.now() - start;
     
-    // Add Server-Timing header with request duration
-    const timingValue = `total;dur=${duration};desc="Total Processing Time"`;
-    res.setHeader('Server-Timing', timingValue);
-
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {

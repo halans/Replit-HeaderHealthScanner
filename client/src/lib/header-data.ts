@@ -69,6 +69,14 @@ export const PERFORMANCE_HEADERS: Record<string, Partial<HeaderDetail>> = {
     recommendation: "Use the Vary header with 'Accept-Encoding' to properly handle compressed content, and consider other values based on your content negotiation",
     link: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary",
     importance: "important"
+  },
+  "Server-Timing": {
+    name: "Server-Timing",
+    key: "server-timing",
+    description: "Server-Timing communicates timing information for request processing, aiding performance debugging and optimization.",
+    recommendation: "Implement Server-Timing to expose server processing metrics for debugging and performance analysis",
+    link: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server-Timing",
+    importance: "recommended"
   }
 };
 
@@ -90,12 +98,12 @@ export const MAINTAINABILITY_HEADERS: Record<string, Partial<HeaderDetail>> = {
     link: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Ranges",
     importance: "recommended"
   },
-  "Server-Timing": {
-    name: "Server-Timing",
-    key: "server-timing",
-    description: "Server-Timing communicates timing information for request processing, aiding performance debugging.",
-    recommendation: "Consider implementing Server-Timing to expose server processing metrics for debugging",
-    link: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Server-Timing",
-    importance: "optional"
+  "X-Request-ID": {
+    name: "X-Request-ID",
+    key: "x-request-id",
+    description: "X-Request-ID provides a unique identifier for HTTP requests, making request tracing and debugging easier.",
+    recommendation: "Generate and include a unique X-Request-ID for each request to facilitate troubleshooting",
+    link: "https://devcenter.heroku.com/articles/http-request-id",
+    importance: "recommended"
   }
 };
