@@ -253,8 +253,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         headers['content-encoding'] = 'gzip';
       }
       
-      // For large responses, transfer-encoding will be set
-      headers['transfer-encoding'] = 'chunked';
+      // Note: We don't set transfer-encoding manually as it's a hop-by-hop header
+      // Node.js/Express handle it automatically
       
       // Calculate scores using our explicitly enhanced headers
       const analysisStart = Date.now();
@@ -528,6 +528,10 @@ function calculateSecurityScore(headers: Record<string, string>) {
       }
       
       implemented++;
+    } else if (header.importance === 'optional' || header.importance === 'recommended') {
+      // Mark missing optional and recommended headers as warnings rather than errors
+      header.status = 'warning';
+      header.recommendation = `This is a ${header.importance} security header that can enhance your security posture`;
     }
   }
   
@@ -626,6 +630,10 @@ function calculatePerformanceScore(headers: Record<string, string>) {
       }
       
       implemented++;
+    } else if (header.importance === 'optional' || header.importance === 'recommended') {
+      // Mark missing optional and recommended headers as warnings rather than errors
+      header.status = 'warning';
+      header.recommendation = `This is a ${header.importance} performance header that can enhance your site's speed`;
     }
   }
   
@@ -698,6 +706,10 @@ function calculateMaintainabilityScore(headers: Record<string, string>) {
       }
       
       implemented++;
+    } else if (header.importance === 'optional' || header.importance === 'recommended') {
+      // Mark missing optional and recommended headers as warnings rather than errors
+      header.status = 'warning';
+      header.recommendation = `This is a ${header.importance} maintainability header that can enhance your site's diagnostics`;
     }
   }
   

@@ -66,11 +66,14 @@ app.use((req, res, next) => {
   // Add missing performance headers
   res.setHeader('ETag', `W/"${crypto.randomBytes(8).toString('hex')}"`);
   
-  // Enable Accept-Ranges for maintainability
-  res.setHeader('Accept-Ranges', 'bytes');
+  // Enable Accept-Ranges (set to none as requested)
+  res.setHeader('Accept-Ranges', 'none');
   
-  // Additional security headers not covered by helmet
+  // Additional security headers
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'");
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('X-Frame-Options', 'DENY');
   
   // Remove these as they're now handled by helmet
   // res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
@@ -109,10 +112,8 @@ app.use((req, res, next) => {
     if (!res.getHeader('Content-Type')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
     }
-    // For Transfer-Encoding
-    if (!res.getHeader('Transfer-Encoding') && bodyJson && JSON.stringify(bodyJson).length > 1024) {
-      res.setHeader('Transfer-Encoding', 'chunked');
-    }
+    // Note: Transfer-Encoding is automatically set by Node.js/Express
+    // We don't need to manually set it as it's a hop-by-hop header
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
