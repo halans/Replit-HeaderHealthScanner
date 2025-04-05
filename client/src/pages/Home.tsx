@@ -191,42 +191,7 @@ export default function Home() {
             </ol>
           </div>
           
-          <div>
-            <h3 className="text-xl font-semibold text-[#1D3354] mb-3">Important Headers</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="border p-4 rounded-md">
-                <h4 className="font-medium text-[#1D3354] mb-2">Security Headers</h4>
-                <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
-                  <li>Content-Security-Policy</li>
-                  <li>X-XSS-Protection</li>
-                  <li>X-Frame-Options</li>
-                  <li>X-Content-Type-Options</li>
-                  <li>Strict-Transport-Security</li>
-                  <li>Referrer-Policy</li>
-                </ul>
-              </div>
-              <div className="border p-4 rounded-md">
-                <h4 className="font-medium text-[#1D3354] mb-2">Performance Headers</h4>
-                <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
-                  <li>Cache-Control</li>
-                  <li>ETag</li>
-                  <li>Vary</li>
-                  <li>Content-Encoding</li>
-                  <li>Transfer-Encoding</li>
-                  <li>Server-Timing</li>
-                </ul>
-              </div>
-              <div className="border p-4 rounded-md">
-                <h4 className="font-medium text-[#1D3354] mb-2">Maintainability Headers</h4>
-                <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
-                  <li>Server</li>
-                  <li>X-Runtime</li>
-                  <li>X-Request-ID</li>
-                  <li>X-DNS-Prefetch-Control</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+
           
           <div>
             <h3 className="text-xl font-semibold text-[#1D3354] mb-3">Resources</h3>
