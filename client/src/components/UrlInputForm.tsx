@@ -2,7 +2,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -54,6 +54,7 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
                         {...field}
                       />
                     </div>
+                    <FormMessage className="mt-2 text-sm text-red-600" />
                   </FormControl>
                 </FormItem>
               )}
