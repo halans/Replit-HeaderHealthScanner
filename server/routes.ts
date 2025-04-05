@@ -170,8 +170,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const totalTime = Date.now() - startTime;
         res.setHeader('Server-Timing', `app;dur=${totalTime}`);
         
-        // Also add the timing to the headers object so it's included in the raw headers display
-        headers['server-timing'] = `app;dur=${totalTime}`;
         
         // Return the analysis to the client
         res.json({
@@ -327,8 +325,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const totalTime = Date.now() - startTime;
         res.setHeader('Server-Timing', `app;dur=${totalTime}`);
         
-        // Also add the timing to the headers object so it's included in the raw headers display
-        headers['server-timing'] = `app;dur=${totalTime}`;
         
         // Return the full header analysis
         res.json({

@@ -12,7 +12,27 @@ interface ServerTimingSectionProps {
 
 export default function ServerTimingSection({ serverTiming }: ServerTimingSectionProps) {
   if (!serverTiming) {
-    return null;
+    // Display a message when no Server-Timing header is present
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-8 mt-8 border-b-4 border-[#1D3354] card-hover">
+        <div className="flex flex-col mb-6">
+          <h2 className="text-2xl font-bold gradient-heading">Server Performance Metrics</h2>
+          <p className="text-[#36382E]/70 mt-1">
+            Server-Timing header information is not available for this request
+          </p>
+        </div>
+        
+        <div className="p-4 bg-gray-100 rounded-md text-center">
+          <Clock className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+          <p className="text-gray-500">No Server-Timing metrics were provided in the response headers.</p>
+        </div>
+        
+        <div className="mt-4 text-sm text-[#36382E]/60 flex items-center">
+          <div className="w-2 h-2 bg-[#9ED8DB] rounded-full mr-2"></div>
+          <span>Server-Timing metrics help identify performance bottlenecks on the server side.</span>
+        </div>
+      </div>
+    );
   }
 
   // Parse Server-Timing header to extract metrics
