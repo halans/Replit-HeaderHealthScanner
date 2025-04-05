@@ -49,7 +49,7 @@ export function generateSummary(
   let summary = `Your site implements <span class="font-medium">${totalImplemented} out of ${totalHeaders}</span> recommended HTTP headers.`;
   
   if (criticalMissingHeaders.length > 0) {
-    summary += ` Critical security headers like <span class="font-medium text-red-600">${criticalMissingHeaders.join(", ")}</span> are missing, which may expose your site to security vulnerabilities.`;
+    summary += ` Critical security headers like <span class="font-medium text-[#D64045]">${criticalMissingHeaders.join(", ")}</span> are missing, which may expose your site to security vulnerabilities.`;
   } else if (securityImplemented < securityTotal) {
     summary += ` Some security headers are missing but all critical ones are implemented.`;
   } else {
