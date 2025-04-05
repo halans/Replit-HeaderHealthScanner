@@ -1,8 +1,9 @@
-import { Copy, Clock, AlertTriangle, ShieldCheck, Zap, Info } from "lucide-react";
+import { Copy, Clock, AlertTriangle, ShieldCheck, Zap, Info, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface RawHeadersSectionProps {
   headers: Record<string, string>;
@@ -119,11 +120,20 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
     });
   };
 
-  // Format headers as string for copy function
+  // Format headers as string for copy function and raw display
   const formatHeadersText = (): string => {
     return Object.entries(headers)
       .map(([key, value]) => `${key}: ${value}`)
       .join('\n');
+  };
+  
+  // Render raw headers as plain text
+  const renderRawHeaders = () => {
+    return (
+      <pre className="whitespace-pre-wrap font-mono text-[#EDE6E3]/80 break-all">
+        {formatHeadersText()}
+      </pre>
+    );
   };
 
   // Copy headers to clipboard
@@ -162,19 +172,38 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         </Button>
       </div>
       
-      <div className="bg-[#36382E] text-white p-5 rounded-md font-mono text-sm overflow-x-auto shadow-md">
-        <div className="flex items-center justify-between mb-3 text-[#EDE6E3]/70 text-xs border-b border-[#EDE6E3]/20 pb-2">
-          <span>HTTP RESPONSE HEADERS</span>
-          <span className="flex items-center">
+      <Tabs defaultValue="formatted" className="w-full">
+        <div className="flex items-center justify-between mb-3">
+          <TabsList className="mb-2">
+            <TabsTrigger value="formatted" className="flex items-center">
+              <Info className="h-4 w-4 mr-2" />
+              Formatted
+            </TabsTrigger>
+            <TabsTrigger value="raw" className="flex items-center">
+              <Code className="h-4 w-4 mr-2" />
+              Raw Text
+            </TabsTrigger>
+          </TabsList>
+          <span className="flex items-center text-[#36382E]/70 text-xs">
             <Clock className="h-3 w-3 mr-1" />
             {headerCount} headers found
           </span>
         </div>
         
-        <div className="whitespace-pre-wrap break-all">
-          {renderHeaders()}
+        <div className="bg-[#36382E] text-white p-5 rounded-md font-mono text-sm overflow-x-auto shadow-md">
+          <div className="flex items-center justify-between mb-3 text-[#EDE6E3]/70 text-xs border-b border-[#EDE6E3]/20 pb-2">
+            <span>HTTP RESPONSE HEADERS</span>
+          </div>
+          
+          <TabsContent value="formatted" className="whitespace-pre-wrap break-all m-0 p-0">
+            {renderHeaders()}
+          </TabsContent>
+          
+          <TabsContent value="raw" className="m-0 p-0">
+            {renderRawHeaders()}
+          </TabsContent>
         </div>
-      </div>
+      </Tabs>
       
       <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
         <div className="flex items-center text-[#36382E]/80">
