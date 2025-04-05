@@ -1,5 +1,8 @@
 import { CircularProgress } from "@/components/ui/circular-progress";
 import { formatDate } from "@/lib/utils";
+import ExportOptions from "@/components/ExportOptions";
+import { type HeaderDetail } from "@/components/HeaderAnalysisSection";
+import { type HeaderScan } from "@shared/schema";
 
 interface ScoreCardProps {
   title: string;
@@ -87,6 +90,10 @@ interface OverallScoreProps {
     grade: string;
   };
   summary: string;
+  securityHeaders?: HeaderDetail[];
+  performanceHeaders?: HeaderDetail[];
+  maintainabilityHeaders?: HeaderDetail[];
+  scan?: HeaderScan;
 }
 
 export default function OverallScore({
@@ -97,7 +104,11 @@ export default function OverallScore({
   security,
   performance,
   maintainability,
-  summary
+  summary,
+  securityHeaders,
+  performanceHeaders,
+  maintainabilityHeaders,
+  scan
 }: OverallScoreProps) {
   const getStatusText = (score: number): string => {
     if (score >= 90) return "Excellent implementation";
@@ -156,8 +167,18 @@ export default function OverallScore({
         <div className="md:col-span-3">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold text-[#36382E]">Category Scores</h3>
-            <div className="text-[#36382E]/70 text-sm">
-              Scores reflect header implementation
+            <div className="flex items-center gap-3">
+              <div className="text-[#36382E]/70 text-sm">
+                Scores reflect header implementation
+              </div>
+              {scan && securityHeaders && performanceHeaders && maintainabilityHeaders && (
+                <ExportOptions
+                  scan={scan}
+                  securityHeaders={securityHeaders}
+                  performanceHeaders={performanceHeaders}
+                  maintainabilityHeaders={maintainabilityHeaders}
+                />
+              )}
             </div>
           </div>
           

@@ -100,6 +100,10 @@ export default function Home() {
               grade: result.scan.maintainabilityGrade,
             }}
             summary={summary}
+            securityHeaders={result.securityHeaders}
+            performanceHeaders={result.performanceHeaders}
+            maintainabilityHeaders={result.maintainabilityHeaders}
+            scan={result.scan}
           />
           
           <div className="w-full mb-6">
