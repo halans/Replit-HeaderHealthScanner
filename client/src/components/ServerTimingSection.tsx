@@ -39,18 +39,14 @@ export default function ServerTimingSection({ serverTiming }: ServerTimingSectio
   // Calculate total processing time (sum of all durations)
   const totalTime = timingEntries.reduce((sum, entry) => sum + entry.duration, 0);
   
-  // Filter out entries with duration 0
-  const validEntries = timingEntries.filter(entry => entry.duration > 0);
+  // Include all entries even if duration is 0
+  const validEntries = timingEntries;
   
   // Sort by duration (descending)
   const sortedEntries = [...validEntries].sort((a, b) => b.duration - a.duration);
   
   // Find the maximum duration for scaling the bars
-  const maxDuration = sortedEntries.length > 0 ? sortedEntries[0].duration : 0;
-
-  if (validEntries.length === 0) {
-    return null;
-  }
+  const maxDuration = sortedEntries.length > 0 ? sortedEntries[0].duration : 1; // Use 1 as minimum to avoid division by zero
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-8 mt-8 border-b-4 border-[#1D3354] card-hover">

@@ -11,6 +11,13 @@ import RawHeadersSection from "@/components/RawHeadersSection";
 import CloudflareHeadersSection from "@/components/CloudflareHeadersSection";
 import ServerTimingSection from "@/components/ServerTimingSection";
 import { generateSummary } from "@/lib/score-calculator";
+import { 
+  SkeletonOverallScore, 
+  SkeletonHeaderAnalysis, 
+  SkeletonRawHeaders, 
+  SkeletonCloudflareHeaders,
+  SkeletonServerTiming 
+} from "@/components/SkeletonLoading";
 
 interface AnalysisResult {
   scan: HeaderScan;
@@ -85,11 +92,18 @@ export default function Home() {
       
       {/* Loading State */}
       {analyzeHeadersMutation.isPending && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8 flex flex-col items-center justify-center py-12">
-          <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-primary-600 animate-spin"></div>
-          <p className="mt-4 text-slate-600">
-            Analyzing headers for <span className="font-medium">{analyzeHeadersMutation.variables}</span>...
-          </p>
+        <div className="mb-8">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-4 flex flex-col items-center justify-center py-6">
+            <div className="h-12 w-12 rounded-full border-4 border-slate-200 border-t-primary-600 animate-spin"></div>
+            <p className="mt-4 text-slate-600">
+              Analyzing headers for <span className="font-medium">{analyzeHeadersMutation.variables}</span>...
+            </p>
+          </div>
+          
+          {/* Skeleton loading states */}
+          <SkeletonOverallScore />
+          <SkeletonHeaderAnalysis />
+          <SkeletonRawHeaders />
         </div>
       )}
       
@@ -140,13 +154,14 @@ export default function Home() {
             <CloudflareHeadersSection cloudflareHeaders={result.cloudflareHeaders} />
           )}
           
-          {/* Server-Timing Section - Only show if server-timing header is present */}
-          {result.scan.rawHeaders && 
-           ((result.scan.rawHeaders as Record<string, string>)['server-timing'] || 
-            (result.scan.rawHeaders as Record<string, string>)['Server-Timing']) && (
+          {/* Server-Timing Section - Always show if rawHeaders exist */}
+          {result.scan.rawHeaders && (
             <ServerTimingSection 
-              serverTiming={(result.scan.rawHeaders as Record<string, string>)['server-timing'] || 
-                            (result.scan.rawHeaders as Record<string, string>)['Server-Timing']} 
+              serverTiming={
+                (result.scan.rawHeaders as Record<string, string>)['server-timing'] || 
+                (result.scan.rawHeaders as Record<string, string>)['Server-Timing'] || 
+                'app;dur=0'
+              } 
             />
           )}
           
