@@ -166,20 +166,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Save the record
         const savedHeaderScan = await time('db-storage', async () => storage.saveHeaderScan(headerScan));
         
-        // Generate Server-Timing header with detailed metrics
+        // Set a simple Server-Timing header
         const totalTime = Date.now() - startTime;
-        let serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=${totalTime}`;
-        
-        // Add individual operation timings
-        Object.entries(timings).forEach(([name, duration]) => {
-          serverTimingHeader += `, ${name};dur=${duration};desc="${name.replace(/-/g, ' ')}"`;
-        });
-        
-        // Set the Server-Timing header with detailed metrics
-        res.setHeader('Server-Timing', serverTimingHeader);
+        res.setHeader('Server-Timing', `app;dur=${totalTime}`);
         
         // Also add the timing to the headers object so it's included in the raw headers display
-        headers['server-timing'] = serverTimingHeader;
+        headers['server-timing'] = `app;dur=${totalTime}`;
         
         // Return the analysis to the client
         res.json({
@@ -216,11 +208,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const start = Date.now();
     
     // Set a simple Server-Timing header for the health check
-    const serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=0, health-check;dur=${Date.now() - start};desc="Health Check"`;
-    res.setHeader('Server-Timing', serverTimingHeader);
-    
-    // Add to the response object for potential debugging
-    const headers = { 'server-timing': serverTimingHeader };
+    const duration = Date.now() - start;
+    res.setHeader('Server-Timing', `app;dur=${duration}`);
     
     res.json({ status: "ok" });
   });
@@ -278,12 +267,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const selfCheckDuration = Date.now() - selfCheckStart;
       const totalTime = Date.now() - startTime;
       
-      // Set Server-Timing header with detailed metrics
-      const serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=${totalTime}, ` +
-                               `self-check;dur=${selfCheckDuration};desc="Self Check", ` +
-                               `analysis;dur=${analysisDuration};desc="Score Analysis"`;
-      
-      res.setHeader('Server-Timing', serverTimingHeader);
+      // Set simple Server-Timing header
+      const duration = Date.now() - startTime;
+      res.setHeader('Server-Timing', `app;dur=${duration}`);
       
       // Return our own header analysis
       res.json({
@@ -337,20 +323,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
         );
         
-        // Generate Server-Timing header with detailed metrics
+        // Set a simple Server-Timing header
         const totalTime = Date.now() - startTime;
-        let serverTimingHeader = `app;desc="HTTP Header Analyzer";dur=${totalTime}`;
-        
-        // Add individual operation timings
-        Object.entries(timings).forEach(([name, duration]) => {
-          serverTimingHeader += `, ${name};dur=${duration};desc="${name.replace(/-/g, ' ')}"`;
-        });
-        
-        // Set the Server-Timing header with detailed metrics
-        res.setHeader('Server-Timing', serverTimingHeader);
+        res.setHeader('Server-Timing', `app;dur=${totalTime}`);
         
         // Also add the timing to the headers object so it's included in the raw headers display
-        headers['server-timing'] = serverTimingHeader;
+        headers['server-timing'] = `app;dur=${totalTime}`;
         
         // Return the full header analysis
         res.json({
