@@ -108,7 +108,7 @@ export default function Footer() {
               </a>
             </div>
             <p className="text-xs text-[#36382E]/60">
-              Built with <Heart className="inline h-3 w-3 text-red-500" /> on Replit
+              Made with <Heart className="inline h-3 w-3 text-red-500" /> on Replit in Sydney
             </p>
           </div>
         </div>

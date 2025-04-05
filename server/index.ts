@@ -112,16 +112,18 @@ app.use((req, res, next) => {
     if (!res.getHeader('Content-Type')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
     }
+    
+    // Add Server-Timing header if not already set
+    if (!res.getHeader('Server-Timing')) {
+      const duration = Date.now() - start;
+      const serverTimingValue = `app;desc="HTTP Header Analyzer";dur=${duration}`;
+      res.setHeader('Server-Timing', serverTimingValue);
+    }
+    
     // Note: Transfer-Encoding is automatically set by Node.js/Express
     // We don't need to manually set it as it's a hop-by-hop header
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
-
-  // Initialize the Server-Timing header
-  let serverTimingValue = `app;desc="HTTP Header Analyzer"`;
-  
-  // Set initial timing header
-  res.setHeader('Server-Timing', serverTimingValue);
   
   // We can't modify headers after they're sent, so we'll just log the duration
   res.on("finish", () => {

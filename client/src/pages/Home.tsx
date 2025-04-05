@@ -141,8 +141,13 @@ export default function Home() {
           )}
           
           {/* Server-Timing Section - Only show if server-timing header is present */}
-          {result.scan.rawHeaders && (result.scan.rawHeaders as Record<string, string>)['server-timing'] && (
-            <ServerTimingSection serverTiming={(result.scan.rawHeaders as Record<string, string>)['server-timing']} />
+          {result.scan.rawHeaders && 
+           ((result.scan.rawHeaders as Record<string, string>)['server-timing'] || 
+            (result.scan.rawHeaders as Record<string, string>)['Server-Timing']) && (
+            <ServerTimingSection 
+              serverTiming={(result.scan.rawHeaders as Record<string, string>)['server-timing'] || 
+                            (result.scan.rawHeaders as Record<string, string>)['Server-Timing']} 
+            />
           )}
           
           <RawHeadersSection headers={result.scan.rawHeaders as Record<string, string>} />
