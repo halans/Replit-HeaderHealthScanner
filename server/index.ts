@@ -121,6 +121,11 @@ app.use((req, res, next) => {
 
   res.on("finish", () => {
     const duration = Date.now() - start;
+    
+    // Add Server-Timing header with request duration
+    const timingValue = `total;dur=${duration};desc="Total Processing Time"`;
+    res.setHeader('Server-Timing', timingValue);
+
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
