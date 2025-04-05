@@ -79,16 +79,20 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
       // Badge color based on category
       let badgeVariant: "default" | "secondary" | "destructive" | "outline" = "outline";
       let icon: React.ReactNode = <Info className="h-3 w-3 mr-1" />;
+      let badgeClass = "bg-gray-600 text-white";
       
       if (category === 'security') {
         badgeVariant = "default";
         icon = <ShieldCheck className="h-3 w-3 mr-1" />;
+        badgeClass = "";
       } else if (category === 'performance') {
         badgeVariant = "secondary";
         icon = <Zap className="h-3 w-3 mr-1" />;
+        badgeClass = "";
       } else if (category === 'maintainability') {
         badgeVariant = "destructive";
         icon = <AlertTriangle className="h-3 w-3 mr-1" />;
+        badgeClass = "";
       }
       
       return (
@@ -101,7 +105,7 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
           <div className="flex items-start justify-between">
             <div className="flex items-center">
               <span className="text-[#9ED8DB] font-medium">{key}:</span>
-              <Badge variant={badgeVariant} className="ml-2 text-xs">
+              <Badge variant={badgeVariant} className={`ml-2 text-xs ${badgeClass}`}>
                 {icon}
                 {category}
               </Badge>
@@ -172,7 +176,7 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         </div>
       </div>
       
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-2 text-xs">
         <div className="flex items-center text-[#36382E]/80">
           <Badge variant="default" className="mr-2"><ShieldCheck className="h-3 w-3" /></Badge>
           <span>Security Headers</span>
@@ -184,6 +188,10 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         <div className="flex items-center text-[#36382E]/80">
           <Badge variant="destructive" className="mr-2"><AlertTriangle className="h-3 w-3" /></Badge>
           <span>Maintainability Headers</span>
+        </div>
+        <div className="flex items-center text-[#36382E]/80">
+          <Badge variant="outline" className="mr-2 bg-gray-600 text-white"><Info className="h-3 w-3" /></Badge>
+          <span>Other Headers</span>
         </div>
       </div>
     </div>

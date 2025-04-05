@@ -70,6 +70,58 @@ function HeaderItem({ header }: HeaderItemProps) {
         return null;
     }
   };
+  
+  const getExampleHeaderValue = (header: HeaderDetail) => {
+    switch (header.key) {
+      case 'content-security-policy':
+        return "default-src 'self'; script-src 'self' https://trusted-cdn.com";
+      case 'x-xss-protection':
+        return "1; mode=block";
+      case 'x-frame-options':
+        return "DENY";
+      case 'x-content-type-options':
+        return "nosniff";
+      case 'strict-transport-security':
+        return "max-age=31536000; includeSubDomains; preload";
+      case 'referrer-policy':
+        return "no-referrer-when-downgrade";
+      case 'permissions-policy':
+        return "camera=(), microphone=(), geolocation=(), interest-cohort=()";
+      case 'cross-origin-embedder-policy':
+        return "require-corp";
+      case 'cross-origin-opener-policy':
+        return "same-origin";
+      case 'cross-origin-resource-policy':
+        return "same-origin";
+      case 'cache-control':
+        return "max-age=31536000, public";
+      case 'etag':
+        return "W/\"123456789\"";
+      case 'vary':
+        return "Accept-Encoding, Origin";
+      case 'content-encoding':
+        return "gzip";
+      case 'transfer-encoding':
+        return "chunked";
+      case 'accept-ranges':
+        return "bytes";
+      case 'content-type':
+        return "text/html; charset=utf-8";
+      case 'content-language':
+        return "en-US";
+      case 'access-control-allow-origin':
+        return "*";
+      case 'alt-svc':
+        return "h3=\":443\"; ma=86400";
+      default:
+        // Extract an example from the recommendation if possible
+        if (header.recommendation && header.recommendation.includes(':')) {
+          return header.recommendation.split(': ')[1];
+        }
+        // Default fallback
+        return "example-value";
+    }
+  };
 
   return (
     <Collapsible
@@ -148,7 +200,7 @@ function HeaderItem({ header }: HeaderItemProps) {
             <p className="text-[#36382E]/80 mb-2">{header.recommendation}</p>
             {header.status !== 'implemented' && (
               <pre className="mt-2 bg-[#36382E] text-white p-4 rounded-md text-sm font-mono overflow-x-auto shadow-sm border border-[#36382E]/20">
-                {header.name}: {header.recommendation.includes(':') ? header.recommendation.split(': ')[1] : header.recommendation}
+                {header.name}: {getExampleHeaderValue(header)}
               </pre>
             )}
           </div>
