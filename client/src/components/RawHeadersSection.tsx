@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Copy, Clock, AlertTriangle, ShieldCheck, Zap, Info, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -29,6 +30,15 @@ const HEADER_TYPES = {
 export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
   const { toast } = useToast();
   const headerCount = Object.keys(headers).length;
+  const [activeTab, setActiveTab] = useState<string>("formatted");
+
+  // Update the tab indicator when the tab changes
+  useEffect(() => {
+    const tabIndicator = document.querySelector('[data-tab-indicator]');
+    if (tabIndicator) {
+      tabIndicator.textContent = activeTab === "formatted" ? "Formatted View" : "Raw Text View";
+    }
+  }, [activeTab]);
 
   // Categorize headers
   const categorizeHeader = (headerName: string): 'security' | 'performance' | 'maintainability' | 'other' => {
@@ -172,7 +182,11 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         </Button>
       </div>
       
-      <Tabs defaultValue="formatted" className="w-full">
+      <Tabs 
+        defaultValue="formatted" 
+        className="w-full" 
+        onValueChange={(value) => setActiveTab(value)}
+      >
         <div className="flex items-center justify-between mb-3">
           <TabsList className="mb-2">
             <TabsTrigger value="formatted" className="flex items-center">
@@ -192,7 +206,12 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         
         <div className="bg-[#36382E] text-white p-5 rounded-md font-mono text-sm overflow-x-auto shadow-md">
           <div className="flex items-center justify-between mb-3 text-[#EDE6E3]/70 text-xs border-b border-[#EDE6E3]/20 pb-2">
-            <span>HTTP RESPONSE HEADERS</span>
+            <div className="flex items-center gap-3">
+              <span>HTTP RESPONSE HEADERS</span>
+              <span className="px-2 py-1 text-xs rounded-full bg-[#1D3354] text-white">
+                Showing: <span className="font-semibold" data-tab-indicator>Formatted View</span>
+              </span>
+            </div>
           </div>
           
           <TabsContent value="formatted" className="whitespace-pre-wrap break-all m-0 p-0">

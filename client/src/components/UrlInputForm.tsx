@@ -62,6 +62,13 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
                             // We'll just pass the raw value and let the schema handle validation
                             field.onChange(e.target.value);
                           }}
+                          onPaste={(e) => {
+                            // Intercept the paste event to remove http:// or https:// prefix
+                            e.preventDefault();
+                            const pastedText = e.clipboardData.getData('text');
+                            const cleanedText = pastedText.replace(/^https?:\/\//i, '');
+                            field.onChange(cleanedText);
+                          }}
                           value={field.value}
                           onBlur={field.onBlur}
                           name={field.name}
