@@ -6,6 +6,19 @@ import fetch from "node-fetch";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
+// Define the HeaderDetail type interface
+interface HeaderDetail {
+  name: string;
+  key: string;
+  implemented: boolean;
+  value: string | null;
+  status: 'missing' | 'implemented' | 'warning';
+  importance: 'critical' | 'important' | 'recommended' | 'optional';
+  description: string;
+  recommendation?: string;
+  link: string;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Analyze Headers Route
   app.post("/api/analyze", async (req, res) => {
@@ -101,7 +114,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 // Helper function to calculate security score
 function calculateSecurityScore(headers: Record<string, string>) {
-  const securityHeaders = [
+  const securityHeaders: HeaderDetail[] = [
     {
       name: 'Content-Security-Policy',
       key: 'content-security-policy',
@@ -218,11 +231,29 @@ function calculateSecurityScore(headers: Record<string, string>) {
   let implemented = 0;
   
   for (const header of securityHeaders) {
-    const headerValue = Object.keys(headers).find(key => key.toLowerCase() === header.key);
+    // Special case for Content-Security-Policy to also check for Report-Only variant
+    let headerValue: string | undefined;
+    if (header.key === 'content-security-policy') {
+      headerValue = Object.keys(headers).find(
+        key => key.toLowerCase() === header.key || key.toLowerCase() === 'content-security-policy-report-only'
+      );
+      
+      // If only the report-only version is implemented, mark as warning instead of implemented
+      if (headerValue && headerValue.toLowerCase() === 'content-security-policy-report-only') {
+        header.implemented = true;
+        header.value = headers[headerValue] as string;
+        header.status = 'warning';
+        header.recommendation = "You're using Content-Security-Policy-Report-Only which only monitors violations. Consider implementing the enforced Content-Security-Policy header for better security.";
+        implemented++;
+        continue;
+      }
+    } else {
+      headerValue = Object.keys(headers).find(key => key.toLowerCase() === header.key);
+    }
     
     if (headerValue) {
       header.implemented = true;
-      header.value = headers[headerValue];
+      header.value = headers[headerValue] as string;
       header.status = 'implemented';
       
       // Additional checks for specific headers
@@ -255,7 +286,7 @@ function calculateSecurityScore(headers: Record<string, string>) {
 
 // Helper function to calculate performance score
 function calculatePerformanceScore(headers: Record<string, string>) {
-  const performanceHeaders = [
+  const performanceHeaders: HeaderDetail[] = [
     {
       name: 'Cache-Control',
       key: 'cache-control',
@@ -321,7 +352,7 @@ function calculatePerformanceScore(headers: Record<string, string>) {
     
     if (headerValue) {
       header.implemented = true;
-      header.value = headers[headerValue];
+      header.value = headers[headerValue] as string;
       header.status = 'implemented';
       
       // Additional checks for specific headers
@@ -353,7 +384,7 @@ function calculatePerformanceScore(headers: Record<string, string>) {
 
 // Helper function to calculate maintainability score
 function calculateMaintainabilityScore(headers: Record<string, string>) {
-  const maintainabilityHeaders = [
+  const maintainabilityHeaders: HeaderDetail[] = [
     {
       name: 'Content-Type',
       key: 'content-type',
@@ -397,7 +428,7 @@ function calculateMaintainabilityScore(headers: Record<string, string>) {
     
     if (headerValue) {
       header.implemented = true;
-      header.value = headers[headerValue];
+      header.value = headers[headerValue] as string;
       header.status = 'implemented';
       
       // Additional checks for specific headers
