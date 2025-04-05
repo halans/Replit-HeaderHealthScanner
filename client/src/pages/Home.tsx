@@ -122,6 +122,117 @@ export default function Home() {
           <RawHeadersSection headers={result.scan.rawHeaders as Record<string, string>} />
         </>
       )}
+      
+      {/* About Section */}
+      <section id="about" className="bg-white rounded-lg shadow-lg p-8 mb-8 mt-16">
+        <h2 className="text-2xl font-bold gradient-heading mb-6">About HTTP Header Analyzer</h2>
+        <div className="space-y-4">
+          <p className="text-[#36382E] leading-relaxed">
+            HTTP Header Analyzer is a comprehensive tool designed to help website owners and developers evaluate their implementation of HTTP headers. It analyzes headers across three critical dimensions:
+          </p>
+          <ul className="list-disc pl-6 space-y-2 text-[#36382E]">
+            <li>
+              <strong className="text-[#1D3354]">Security</strong>: Checks for headers that protect against common web vulnerabilities such as XSS attacks, clickjacking, and data breaches.
+            </li>
+            <li>
+              <strong className="text-[#1D3354]">Performance</strong>: Evaluates headers that improve website loading speed through caching, compression, and resource optimization.
+            </li>
+            <li>
+              <strong className="text-[#1D3354]">Maintainability</strong>: Assesses headers that facilitate troubleshooting, debugging, and infrastructure management.
+            </li>
+          </ul>
+          <p className="text-[#36382E] leading-relaxed">
+            Our analyzer provides detailed explanations for each header, highlighting their importance and offering recommendations for optimal implementation.
+          </p>
+          <p className="text-[#36382E] leading-relaxed">
+            This tool is built following modern web security standards, including recommendations from OWASP, Mozilla Observatory, and SecurityHeaders.com.
+          </p>
+        </div>
+      </section>
+      
+      {/* Documentation Section */}
+      <section id="docs" className="bg-white rounded-lg shadow-lg p-8 mb-16">
+        <h2 className="text-2xl font-bold gradient-heading mb-6">Documentation</h2>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-xl font-semibold text-[#1D3354] mb-3">How to Use</h3>
+            <ol className="list-decimal pl-6 space-y-2 text-[#36382E]">
+              <li>Enter a website URL in the input field at the top of the page</li>
+              <li>Click "Analyze Headers" to start the analysis</li>
+              <li>Review the overall score and category breakdowns</li>
+              <li>Examine detailed information in each tab of the analysis section</li>
+              <li>Use the export options to download your results as PDF or CSV</li>
+            </ol>
+          </div>
+          
+          <div>
+            <h3 className="text-xl font-semibold text-[#1D3354] mb-3">Important Headers</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="border p-4 rounded-md">
+                <h4 className="font-medium text-[#1D3354] mb-2">Security Headers</h4>
+                <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
+                  <li>Content-Security-Policy</li>
+                  <li>X-XSS-Protection</li>
+                  <li>X-Frame-Options</li>
+                  <li>X-Content-Type-Options</li>
+                  <li>Strict-Transport-Security</li>
+                  <li>Referrer-Policy</li>
+                </ul>
+              </div>
+              <div className="border p-4 rounded-md">
+                <h4 className="font-medium text-[#1D3354] mb-2">Performance Headers</h4>
+                <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
+                  <li>Cache-Control</li>
+                  <li>ETag</li>
+                  <li>Vary</li>
+                  <li>Content-Encoding</li>
+                  <li>Transfer-Encoding</li>
+                </ul>
+              </div>
+              <div className="border p-4 rounded-md">
+                <h4 className="font-medium text-[#1D3354] mb-2">Maintainability Headers</h4>
+                <ul className="list-disc pl-4 text-sm text-[#36382E]/80">
+                  <li>X-Powered-By</li>
+                  <li>Server</li>
+                  <li>X-Runtime</li>
+                  <li>X-Request-ID</li>
+                  <li>X-DNS-Prefetch-Control</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="text-xl font-semibold text-[#1D3354] mb-3">Resources</h3>
+            <ul className="list-disc pl-6 space-y-2 text-[#36382E]">
+              <li>
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" 
+                   className="text-[#F06449] hover:underline" 
+                   target="_blank" 
+                   rel="noreferrer noopener">
+                  Mozilla MDN: HTTP Headers Documentation
+                </a>
+              </li>
+              <li>
+                <a href="https://owasp.org/www-project-secure-headers/" 
+                   className="text-[#F06449] hover:underline" 
+                   target="_blank" 
+                   rel="noreferrer noopener">
+                  OWASP Secure Headers Project
+                </a>
+              </li>
+              <li>
+                <a href="https://securityheaders.com/" 
+                   className="text-[#F06449] hover:underline" 
+                   target="_blank" 
+                   rel="noreferrer noopener">
+                  SecurityHeaders.com
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

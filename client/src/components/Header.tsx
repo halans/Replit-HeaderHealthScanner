@@ -16,9 +16,9 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
-            <div className="header-icon mr-3">
+            <a href="#top" className="header-icon mr-3">
               <Shield className="h-4 w-4" />
-            </div>
+            </a>
             <Link href="/">
               <h1 className="text-xl font-semibold gradient-heading cursor-pointer">HTTP Header Analyzer</h1>
             </Link>
@@ -34,7 +34,7 @@ export default function Header() {
               Documentation
             </a>
             <a 
-              href="https://github.com"
+              href="https://github.com/halans/Replit-HeaderHealthScanner"
               target="_blank"
               rel="noopener noreferrer"
               className="btn-primary px-3 py-2 rounded-md text-sm font-medium flex items-center"
@@ -69,7 +69,7 @@ export default function Header() {
                   Documentation
                 </a>
                 <a 
-                  href="https://github.com"
+                  href="https://github.com/halans/Replit-HeaderHealthScanner"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-primary px-3 py-2 rounded-md text-sm font-medium inline-flex items-center"

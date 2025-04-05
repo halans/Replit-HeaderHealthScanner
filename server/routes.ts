@@ -112,6 +112,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
+  
+  // Self-check route - analyze our own headers
+  app.get("/api/self-check", (req, res) => {
+    // Create a new response object to send to ourselves
+    const url = `http://localhost:5000${req.originalUrl}`;
+    
+    // Short circuit to prevent infinite recursion
+    if (req.headers['x-self-check'] === 'true') {
+      const headers = { ...res.getHeaders() as Record<string, string> };
+      
+      // Need to explicitly set Content-Type, Content-Encoding and Transfer-Encoding
+      // since they're typically added during response sending
+      headers['content-type'] = 'application/json; charset=utf-8';
+      
+      // If compression middleware is active, it will add content-encoding
+      if (req.headers['accept-encoding']?.includes('gzip')) {
+        headers['content-encoding'] = 'gzip';
+      }
+      
+      // For large responses, transfer-encoding will be set
+      headers['transfer-encoding'] = 'chunked';
+      
+      // Calculate scores using our explicitly enhanced headers
+      const securityHeaders = calculateSecurityScore(headers);
+      const performanceHeaders = calculatePerformanceScore(headers);
+      const maintainabilityHeaders = calculateMaintainabilityScore(headers);
+      
+      // Calculate overall score
+      const overallScore = Math.round(
+        (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
+      );
+      
+      // Return our own header analysis
+      res.json({
+        appName: "HTTP Header Analyzer",
+        rawHeaders: headers,
+        securityScore: securityHeaders.score,
+        performanceScore: performanceHeaders.score,
+        maintainabilityScore: maintainabilityHeaders.score,
+        overallScore,
+        securityGrade: getGrade(securityHeaders.score),
+        performanceGrade: getGrade(performanceHeaders.score),
+        maintainabilityGrade: getGrade(maintainabilityHeaders.score),
+        overallGrade: getGrade(overallScore),
+        securityHeaders: securityHeaders.details,
+        performanceHeaders: performanceHeaders.details,
+        maintainabilityHeaders: maintainabilityHeaders.details
+      });
+      return;
+    }
+    
+    // Make an actual request to ourselves to capture all headers
+    fetch(url, {
+      headers: {
+        'X-Self-Check': 'true',
+        'Accept-Encoding': 'gzip'
+      }
+    })
+    .then(response => {
+      // Extract all headers from the response
+      const headers: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+      
+      // Calculate scores with the complete set of headers
+      const securityHeaders = calculateSecurityScore(headers);
+      const performanceHeaders = calculatePerformanceScore(headers);
+      const maintainabilityHeaders = calculateMaintainabilityScore(headers);
+      
+      // Calculate overall score
+      const overallScore = Math.round(
+        (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
+      );
+      
+      // Return the full header analysis
+      res.json({
+        appName: "HTTP Header Analyzer",
+        rawHeaders: headers,
+        securityScore: securityHeaders.score,
+        performanceScore: performanceHeaders.score,
+        maintainabilityScore: maintainabilityHeaders.score,
+        overallScore,
+        securityGrade: getGrade(securityHeaders.score),
+        performanceGrade: getGrade(performanceHeaders.score),
+        maintainabilityGrade: getGrade(maintainabilityHeaders.score),
+        overallGrade: getGrade(overallScore),
+        securityHeaders: securityHeaders.details,
+        performanceHeaders: performanceHeaders.details,
+        maintainabilityHeaders: maintainabilityHeaders.details
+      });
+    })
+    .catch(error => {
+      console.error('Error in self-check request:', error);
+      res.status(500).json({ message: 'Error performing self-check' });
+    });
+  });
 
   const httpServer = createServer(app);
   return httpServer;

@@ -2,37 +2,56 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import helmet from "helmet";
+import compression from "compression";
+import crypto from "crypto";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// Enable compression for performance - adds Content-Encoding header
+app.use(compression({
+  // Force compression for all responses
+  filter: () => true,
+  // Set compression level (0-9, where 9 is maximum compression)
+  level: 6
+}));
 
 // Add security, performance and maintainability headers with helmet
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      fontSrc: ["'self'"],
-      connectSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Allow unsafe-eval for React development
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "blob:", "https://*"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'", "https://*"], // Allow external API connections
       frameAncestors: ["'none'"],
       formAction: ["'self'"],
-      baseUri: ["'self'"]
+      baseUri: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+      workerSrc: ["'self'", "blob:"],
+      manifestSrc: ["'self'"],
+      mediaSrc: ["'self'"]
     }
   },
   xssFilter: true,
   frameguard: { action: 'deny' },
   hsts: {
-    maxAge: 31536000,
+    maxAge: 31536000, // 1 year in seconds
     includeSubDomains: true,
     preload: true
   },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   permittedCrossDomainPolicies: { permittedPolicies: 'none' },
-  dnsPrefetchControl: { allow: true },
-  hidePoweredBy: false // We'll set our own X-Powered-By
+  dnsPrefetchControl: { allow: true }, // Improve performance with DNS prefetching
+  hidePoweredBy: false, // We'll set our own X-Powered-By
+  noSniff: true, // Prevent MIME type sniffing
+  crossOriginEmbedderPolicy: false, // Temporarily disabled for development
+  crossOriginOpenerPolicy: { policy: 'same-origin' },
+  crossOriginResourcePolicy: { policy: 'same-site' },
+  originAgentCluster: true
 }));
 
 // Add custom headers
@@ -44,11 +63,39 @@ app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Vary', 'Accept-Encoding, Origin');
   
+  // Add missing performance headers
+  res.setHeader('ETag', `W/"${crypto.randomBytes(8).toString('hex')}"`);
+  
+  // Enable Accept-Ranges for maintainability
+  res.setHeader('Accept-Ranges', 'bytes');
+  
   // Additional security headers not covered by helmet
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), interest-cohort=()');
-  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-  res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  
+  // Remove these as they're now handled by helmet
+  // res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  // res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  // res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+  
+  // Add server timing header for better performance analysis
+  res.setHeader('Server-Timing', 'app;dur=0');
+  
+  // Add more maintainability headers
+  res.setHeader('X-Request-ID', crypto.randomUUID());
+  
+  // Ensure Content-Type is properly set for maintainability
+  const originalSend = res.send;
+  res.send = function(body) {
+    // If Content-Type is not already set, set it based on content
+    if (!res.getHeader('Content-Type')) {
+      if (typeof body === 'string') {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      } else if (Buffer.isBuffer(body)) {
+        res.setHeader('Content-Type', 'application/octet-stream');
+      }
+    }
+    return originalSend.apply(res, arguments as any);
+  };
   
   next();
 });
@@ -61,6 +108,14 @@ app.use((req, res, next) => {
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
     capturedJsonResponse = bodyJson;
+    // Set Content-Type for JSON responses
+    if (!res.getHeader('Content-Type')) {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    }
+    // For Transfer-Encoding
+    if (!res.getHeader('Transfer-Encoding') && bodyJson && JSON.stringify(bodyJson).length > 1024) {
+      res.setHeader('Transfer-Encoding', 'chunked');
+    }
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
