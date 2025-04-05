@@ -102,7 +102,7 @@ export default function Home() {
             summary={summary}
           />
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="w-full mb-6">
             <HeaderAnalysisSection
               securityHeaders={result.securityHeaders}
               performanceHeaders={result.performanceHeaders}

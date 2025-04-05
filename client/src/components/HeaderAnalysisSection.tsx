@@ -344,30 +344,30 @@ export default function HeaderAnalysisSection({
     <div className="bg-white rounded-lg shadow-lg overflow-hidden border-b-4 border-[#5BC3EB] card-hover">
       <Tabs defaultValue="security">
         <div className="border-b border-[#DADAD9] bg-gradient-to-r from-[#F06449]/5 to-[#5BC3EB]/5">
-          <TabsList className="flex w-full bg-transparent p-0 justify-between">
+          <TabsList className="bg-transparent border-b-0 p-3 w-full flex justify-start">
             <TabsTrigger 
               value="security" 
-              className="flex-1 data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
-                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
-                rounded-t-lg border-b-2 border-transparent"
+              className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
+                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
+                rounded-t-lg border-b-2 border-transparent mr-2"
             >
               Security
             </TabsTrigger>
             <TabsTrigger 
               value="performance" 
-              className="flex-1 data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
-                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
-                rounded-t-lg border-b-2 border-transparent"
+              className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
+                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
+                rounded-t-lg border-b-2 border-transparent mr-2"
             >
               Performance
             </TabsTrigger>
             <TabsTrigger 
               value="maintainability" 
-              className="flex-1 data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
-                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
+              className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
+                data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
                 rounded-t-lg border-b-2 border-transparent"
             >
-              <span className="w-full text-center whitespace-nowrap">Maintainability</span>
+              Maintainability
             </TabsTrigger>
           </TabsList>
         </div>
