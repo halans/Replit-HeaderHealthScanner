@@ -9,14 +9,13 @@ import { fromZodError } from "zod-validation-error";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Analyze Headers Route
   app.post("/api/analyze", async (req, res) => {
+    console.log("Received analyze request with body:", req.body);
     try {
       // Validate the URL from the request body
+      // The urlSchema now handles URL transformation
       const { url } = urlSchema.parse(req.body);
-      
-      let fullUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        fullUrl = `https://${url}`;
-      }
+      console.log("Validated URL:", url);
+      const fullUrl = url;
       
       // Fetch the headers from the URL
       try {

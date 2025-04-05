@@ -22,6 +22,7 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
   });
 
   function onSubmit(values: z.infer<typeof urlSchema>) {
+    console.log("Form submitted with values:", values);
     onAnalyze(values.url);
   }
 

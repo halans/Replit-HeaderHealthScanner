@@ -40,7 +40,23 @@ export const insertHeaderScanSchema = createInsertSchema(headerScans).omit({
 });
 
 export const urlSchema = z.object({
-  url: z.string().url().min(1)
+  url: z.string()
+    .min(1, "Please enter a website URL")
+    .transform(val => {
+      // If URL doesn't contain http:// or https://, add https://
+      if (!/^https?:\/\//i.test(val)) {
+        return `https://${val}`;
+      }
+      return val;
+    })
+    .refine(val => {
+      try {
+        new URL(val);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }, { message: "Please enter a valid URL" })
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

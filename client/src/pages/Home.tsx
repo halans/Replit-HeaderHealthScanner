@@ -41,6 +41,7 @@ export default function Home() {
 
   // Handle analyze button click
   const handleAnalyze = (url: string) => {
+    console.log("Analyze button clicked with URL:", url);
     analyzeHeadersMutation.mutate(url);
   };
 
