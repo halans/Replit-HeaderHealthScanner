@@ -15,7 +15,7 @@ interface CircularProgressProps {
 export function CircularProgress({
   value,
   size = "md",
-  color = "stroke-primary-600",
+  color = "#5BC3EB",
   showPercentage = true,
   showGrade = false,
   className,
@@ -23,15 +23,21 @@ export function CircularProgress({
   children,
 }: CircularProgressProps) {
   const sizesMap = {
-    sm: "w-[60px] h-[60px]",
-    md: "w-[100px] h-[100px]",
-    lg: "w-[150px] h-[150px]",
+    sm: "w-[70px] h-[70px]",
+    md: "w-[120px] h-[120px]",
+    lg: "w-[180px] h-[180px]",
   };
 
   const fontSizeMap = {
-    sm: "text-xl",
-    md: "text-3xl",
-    lg: "text-4xl",
+    sm: "text-2xl",
+    md: "text-4xl",
+    lg: "text-5xl",
+  };
+  
+  const scoreFontMap = {
+    sm: "text-xs",
+    md: "text-sm",
+    lg: "text-base",
   };
 
   const getGrade = (score: number): string => {
@@ -56,10 +62,20 @@ export function CircularProgress({
     
     return "";
   };
+  
+  const getColorForGrade = (): string => {
+    if (value >= 90) return "#10B981"; // green
+    if (value >= 70) return "#F59E0B"; // yellow/amber
+    return "#EF4444"; // red
+  };
 
   const grade = getGrade(value);
   const gradeModifier = getGradeModifier(grade);
   const gradeDisplay = `${grade}${gradeModifier}`;
+  
+  // Use provided color or fallback to grade-based color
+  const strokeColor = color.startsWith("#") ? color : getColorForGrade();
+  const textColor = color.startsWith("#") ? color : getColorForGrade();
 
   return (
     <div
@@ -70,14 +86,22 @@ export function CircularProgress({
       )}
     >
       <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+        {/* Background circle */}
         <path
-          className={`stroke-[${thickness}] stroke-slate-200 fill-none`}
+          className="fill-none"
+          style={{ stroke: "#EDE6E3", strokeWidth: thickness }}
           d="M18 2.0845
             a 15.9155 15.9155 0 0 1 0 31.831
             a 15.9155 15.9155 0 0 1 0 -31.831"
         />
+        {/* Progress circle */}
         <path
-          className={`stroke-[${thickness}] ${color} fill-none`}
+          className="fill-none"
+          style={{ 
+            stroke: strokeColor, 
+            strokeWidth: thickness,
+            strokeLinecap: "round"
+          }}
           strokeDasharray={`${value}, 100`}
           d="M18 2.0845
             a 15.9155 15.9155 0 0 1 0 31.831
@@ -90,12 +114,17 @@ export function CircularProgress({
         ) : (
           <>
             {showGrade && (
-              <div className={cn(fontSizeMap[size], "font-bold", color.replace("stroke-", "text-"))}>
+              <div 
+                className={cn(fontSizeMap[size], "font-bold")}
+                style={{ color: textColor }}
+              >
                 {gradeDisplay}
               </div>
             )}
             {showPercentage && (
-              <div className="text-sm text-slate-500">
+              <div 
+                className={cn(scoreFontMap[size], "font-medium text-[#36382E]/70")}
+              >
                 {value}/100
               </div>
             )}

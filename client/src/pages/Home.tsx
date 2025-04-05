@@ -8,6 +8,7 @@ import UrlInputForm from "@/components/UrlInputForm";
 import OverallScore from "@/components/OverallScore";
 import HeaderAnalysisSection from "@/components/HeaderAnalysisSection";
 import RawHeadersSection from "@/components/RawHeadersSection";
+import CloudflareHeadersSection from "@/components/CloudflareHeadersSection";
 import { generateSummary } from "@/lib/score-calculator";
 
 interface AnalysisResult {
@@ -15,6 +16,8 @@ interface AnalysisResult {
   securityHeaders: HeaderDetail[];
   performanceHeaders: HeaderDetail[];
   maintainabilityHeaders: HeaderDetail[];
+  cloudflareHeaders?: HeaderDetail[];
+  isUsingCloudflare?: boolean;
 }
 
 export default function Home() {
@@ -106,6 +109,11 @@ export default function Home() {
               maintainabilityHeaders={result.maintainabilityHeaders}
             />
           </div>
+          
+          {/* Cloudflare Headers Section - Only show if site uses Cloudflare */}
+          {result.isUsingCloudflare && result.cloudflareHeaders && result.cloudflareHeaders.length > 0 && (
+            <CloudflareHeadersSection cloudflareHeaders={result.cloudflareHeaders} />
+          )}
           
           <RawHeadersSection headers={result.scan.rawHeaders as Record<string, string>} />
         </>

@@ -17,14 +17,16 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
   };
 
   const headerText = formatHeaders(headers);
+  const headerCount = Object.keys(headers).length;
 
   // Copy headers to clipboard
   const copyHeaders = async () => {
     try {
       await navigator.clipboard.writeText(headerText);
       toast({
-        title: "Headers copied",
+        title: "Success!",
         description: "Headers have been copied to clipboard",
+        variant: "default",
       });
     } catch (err) {
       toast({
@@ -36,21 +38,34 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mt-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">Raw HTTP Response Headers</h2>
+    <div className="bg-white rounded-lg shadow-lg p-8 mt-8 border-b-4 border-[#36382E] card-hover">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div className="mb-4 md:mb-0">
+          <h2 className="text-2xl font-bold gradient-heading">Raw HTTP Headers</h2>
+          <p className="text-[#36382E]/70 mt-1">
+            Complete list of all {headerCount} HTTP response headers
+          </p>
+        </div>
         <Button 
-          variant="ghost" 
           onClick={copyHeaders}
-          className="text-primary-600 hover:text-primary-800 text-sm p-0 h-auto"
+          className="btn-secondary shadow-md"
         >
-          <Copy className="h-4 w-4 mr-1" />
+          <Copy className="h-4 w-4 mr-2" />
           Copy All Headers
         </Button>
       </div>
       
-      <div className="bg-slate-800 text-slate-200 p-4 rounded-md font-mono text-sm overflow-x-auto">
-        <pre>{headerText}</pre>
+      <div className="bg-[#36382E] text-white p-5 rounded-md font-mono text-sm overflow-x-auto shadow-md">
+        <div className="flex items-center justify-between mb-3 text-[#EDE6E3]/70 text-xs border-b border-[#EDE6E3]/20 pb-2">
+          <span>HTTP RESPONSE HEADERS</span>
+          <span>{headerCount} headers found</span>
+        </div>
+        <pre className="whitespace-pre-wrap break-all">{headerText}</pre>
+      </div>
+      
+      <div className="mt-4 text-sm text-[#36382E]/60 flex items-center">
+        <div className="w-2 h-2 bg-[#F06449] rounded-full mr-2"></div>
+        <span>These headers were received when requesting the URL.</span>
       </div>
     </div>
   );

@@ -11,24 +11,52 @@ interface ScoreCardProps {
   icon: string;
 }
 
+import { Shield, Zap, Wrench } from "lucide-react";
+
 function ScoreCard({ title, score, color, implemented, total, status, icon }: ScoreCardProps) {
+  const getIcon = () => {
+    switch(icon) {
+      case "security": return <Shield className="h-5 w-5" />;
+      case "speed": return <Zap className="h-5 w-5" />;
+      case "build": return <Wrench className="h-5 w-5" />;
+      default: return <Shield className="h-5 w-5" />;
+    }
+  };
+  
+  const getColorClass = () => {
+    if (score >= 90) return "bg-gradient-to-r from-green-400 to-green-500";
+    if (score >= 70) return "bg-gradient-to-r from-yellow-400 to-yellow-500";
+    return "bg-gradient-to-r from-red-400 to-red-500";
+  };
+
+  const getBorderColor = () => {
+    if (score >= 90) return "border-green-200";
+    if (score >= 70) return "border-yellow-200";
+    return "border-red-200";
+  };
+  
   return (
-    <div className="bg-slate-50 p-4 rounded-md">
-      <div className="flex items-center mb-2">
-        <span className={`material-icons ${color} mr-2`}>{icon}</span>
-        <h4 className="font-medium text-slate-800">{title}</h4>
+    <div className={`bg-white p-5 rounded-md border ${getBorderColor()} shadow-sm hover:shadow-md transition-shadow`}>
+      <div className="flex items-center mb-3">
+        <div className={`${getColorClass()} p-2 rounded-full text-white mr-3`}>
+          {getIcon()}
+        </div>
+        <h4 className="font-bold text-[#36382E] text-lg">{title}</h4>
       </div>
       <div className="flex items-center">
         <CircularProgress 
           value={score} 
           size="sm" 
-          color={`stroke-${color.replace('text-', '')}`} 
+          color={score >= 90 ? "#10B981" : score >= 70 ? "#F59E0B" : "#EF4444"} 
           showPercentage={false}
           showGrade
+          thickness={3}
         />
-        <div className="ml-3">
-          <div className="text-sm text-slate-500">{implemented}/{total} headers</div>
-          <div className="text-sm text-slate-700">{status}</div>
+        <div className="ml-4">
+          <div className="text-sm font-medium text-[#36382E]/70">
+            {implemented}/{total} headers
+          </div>
+          <div className="text-sm font-semibold text-[#36382E]">{status}</div>
         </div>
       </div>
     </div>
@@ -85,29 +113,55 @@ export default function OverallScore({
     return "text-red-500";
   };
 
+  // Calculate the color for overall score
+  const getOverallScoreColor = () => {
+    if (overallScore >= 90) return "#10B981";
+    if (overallScore >= 70) return "#F59E0B";
+    return "#EF4444";
+  };
+  
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="bg-white rounded-lg shadow-lg p-8 mb-8 border-b-4 border-[#F06449] card-hover">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="md:col-span-1">
-          <h2 className="text-lg font-semibold text-slate-800 mb-2">Overall Score</h2>
-          <p className="text-sm text-slate-600 mb-4">
-            Analyzed <span className="font-medium">{formatDate(timestamp)}</span>
-          </p>
+          <h2 className="text-2xl font-bold gradient-heading mb-2">Results</h2>
+          <div className="text-[#36382E]/80 mb-6 flex items-center space-x-2">
+            <span className="inline-block h-4 w-4 bg-[#F06449] rounded-full"></span>
+            <span>Analyzed {formatDate(timestamp)}</span>
+          </div>
           
-          <div className="flex justify-center">
-            <CircularProgress 
-              value={overallScore} 
-              size="md" 
-              showPercentage 
-              showGrade
-            />
+          <div className="flex justify-center mb-4">
+            <div className="bg-white p-5 rounded-full shadow-md">
+              <CircularProgress 
+                value={overallScore} 
+                size="md" 
+                color={getOverallScoreColor()} 
+                showPercentage 
+                showGrade
+                thickness={4}
+              />
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <h3 className="text-lg font-bold text-[#36382E]">
+              {url}
+            </h3>
+            <p className="text-[#36382E]/70 text-sm">
+              {getStatusText(overallScore)}
+            </p>
           </div>
         </div>
         
         <div className="md:col-span-3">
-          <h3 className="text-md font-medium text-slate-700 mb-3">Category Scores</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold text-[#36382E]">Category Scores</h3>
+            <div className="text-[#36382E]/70 text-sm">
+              Scores reflect header implementation
+            </div>
+          </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <ScoreCard
               title="Security"
               score={security.score}
@@ -139,10 +193,10 @@ export default function OverallScore({
             />
           </div>
           
-          <div className="mt-6">
-            <h3 className="text-md font-medium text-slate-700 mb-3">Summary</h3>
-            <div className="bg-slate-50 p-4 rounded-md">
-              <p className="text-slate-700">{summary}</p>
+          <div className="mt-8">
+            <h3 className="text-xl font-bold text-[#36382E] mb-4">Summary</h3>
+            <div className="bg-[#EDE6E3] p-6 rounded-md border-l-4 border-[#5BC3EB] shadow-sm">
+              <p className="text-[#36382E] leading-relaxed">{summary}</p>
             </div>
           </div>
         </div>

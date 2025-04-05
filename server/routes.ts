@@ -51,6 +51,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const performanceHeaders = calculatePerformanceScore(headers);
         const maintainabilityHeaders = calculateMaintainabilityScore(headers);
         
+        // Check for Cloudflare headers
+        const cloudflareHeaders = analyzeCloudflareHeaders(headers);
+        
         // Calculate overall score
         const overallScore = Math.round(
           (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
@@ -84,7 +87,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           scan: savedHeaderScan,
           securityHeaders: securityHeaders.details,
           performanceHeaders: performanceHeaders.details,
-          maintainabilityHeaders: maintainabilityHeaders.details
+          maintainabilityHeaders: maintainabilityHeaders.details,
+          cloudflareHeaders: cloudflareHeaders.details,
+          isUsingCloudflare: cloudflareHeaders.isUsingCloudflare
         });
       } catch (error) {
         console.error('Error fetching URL headers:', error);
@@ -462,4 +467,105 @@ function getGrade(score: number): string {
   if (score >= 60) return 'D';
   if (score >= 50) return 'E';
   return 'F';
+}
+
+// Helper function to analyze Cloudflare headers
+function analyzeCloudflareHeaders(headers: Record<string, string>) {
+  const cloudflareHeaders: HeaderDetail[] = [
+    {
+      name: 'CF-Cache-Status',
+      key: 'cf-cache-status',
+      implemented: false,
+      value: null,
+      status: 'missing',
+      importance: 'optional',
+      description: 'Indicates whether an asset was served from Cloudflare cache and its cache status.',
+      recommendation: "This header shows how Cloudflare's cache is handling your content. Values like HIT, MISS, DYNAMIC indicate different caching behaviors.",
+      link: 'https://developers.cloudflare.com/cache/concepts/cache-responses/'
+    },
+    {
+      name: 'CF-Ray',
+      key: 'cf-ray',
+      implemented: false,
+      value: null,
+      status: 'missing',
+      importance: 'optional',
+      description: 'A unique identifier for the request through Cloudflare, useful for troubleshooting.',
+      recommendation: "The presence of this header confirms your site is using Cloudflare. Keep this ID when reporting issues to Cloudflare support.",
+      link: 'https://developers.cloudflare.com/fundamentals/get-started/reference/cloudflare-ray-id/'
+    },
+    {
+      name: 'cf-edge-cache',
+      key: 'cf-edge-cache',
+      implemented: false,
+      value: null,
+      status: 'missing',
+      importance: 'optional',
+      description: 'Indicates whether your content was delivered through a Cloudflare edge server.',
+      recommendation: "This header appears when your content is served through Cloudflare Edge Cache.",
+      link: 'https://developers.cloudflare.com/cache/concepts/cache-responses/'
+    },
+    {
+      name: 'cf-apo-via',
+      key: 'cf-apo-via',
+      implemented: false,
+      value: null,
+      status: 'missing',
+      importance: 'optional',
+      description: 'Indicates that the response was served by Cloudflare Automatic Platform Optimization.',
+      recommendation: "This header appears when using Cloudflare's APO service for faster page loads.",
+      link: 'https://developers.cloudflare.com/automatic-platform-optimization/'
+    },
+    {
+      name: 'CF-Worker',
+      key: 'cf-worker',
+      implemented: false,
+      value: null,
+      status: 'missing',
+      importance: 'optional',
+      description: 'Indicates that the request was processed by a Cloudflare Worker script.',
+      recommendation: "This header shows when your site is using Cloudflare Workers to modify responses.",
+      link: 'https://developers.cloudflare.com/workers/'
+    },
+    {
+      name: 'Server',
+      key: 'server',
+      implemented: false,
+      value: null,
+      status: 'missing',
+      importance: 'optional',
+      description: 'The Server header might indicate Cloudflare is serving your content.',
+      recommendation: "If this header contains 'cloudflare', it confirms you're using their services.",
+      link: 'https://developers.cloudflare.com/'
+    }
+  ];
+  
+  let implementedCount = 0;
+  let isUsingCloudflare = false;
+  
+  // Check for Cloudflare headers
+  for (const header of cloudflareHeaders) {
+    const headerValue = Object.keys(headers).find(key => key.toLowerCase() === header.key);
+    
+    if (headerValue) {
+      header.implemented = true;
+      header.value = headers[headerValue] as string;
+      header.status = 'implemented';
+      implementedCount++;
+      isUsingCloudflare = true;
+    } else if (header.key === 'server' && headers['server']?.toLowerCase().includes('cloudflare')) {
+      header.implemented = true;
+      header.value = headers['server'];
+      header.status = 'implemented';
+      implementedCount++;
+      isUsingCloudflare = true;
+    }
+  }
+  
+  return {
+    isUsingCloudflare,
+    total: cloudflareHeaders.length,
+    implemented: implementedCount,
+    details: cloudflareHeaders
+  };
 }
