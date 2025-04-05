@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { faShield } from "@fortawesome/free-solid-svg-icons";
+import { Github, Shield } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -10,11 +8,11 @@ export default function Footer() {
           <div className="flex justify-center md:justify-start space-x-6 md:order-2">
             <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-[#1D3354]/70 hover:text-[#1D3354]">
               <span className="sr-only">GitHub</span>
-              <FontAwesomeIcon icon={faGithub} className="h-6 w-6" />
+              <Github className="h-6 w-6" />
             </a>
             <a href="#" className="text-[#1D3354]/70 hover:text-[#1D3354]">
               <span className="sr-only">Security</span>
-              <FontAwesomeIcon icon={faShield} className="h-6 w-6" />
+              <Shield className="h-6 w-6" />
             </a>
           </div>
           <div className="mt-8 md:mt-0 md:order-1">

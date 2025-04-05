@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Menu } from "lucide-react";
+import { Menu, Shield, Info, Book, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShield, faBook, faInfo } from "@fortawesome/free-solid-svg-icons";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -20,7 +17,7 @@ export default function Header() {
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center">
             <div className="header-icon mr-3">
-              <FontAwesomeIcon icon={faShield} className="h-4 w-4" />
+              <Shield className="h-4 w-4" />
             </div>
             <Link href="/">
               <h1 className="text-xl font-semibold gradient-heading cursor-pointer">HTTP Header Analyzer</h1>
@@ -29,11 +26,11 @@ export default function Header() {
           
           <nav className="hidden md:flex space-x-4">
             <a href="#about" className="text-[#1D3354]/80 hover:text-[#1D3354] px-3 py-2 rounded-md text-sm font-medium flex items-center">
-              <FontAwesomeIcon icon={faInfo} className="mr-2 h-4 w-4" />
+              <Info className="mr-2 h-4 w-4" />
               About
             </a>
             <a href="#docs" className="text-[#1D3354]/80 hover:text-[#1D3354] px-3 py-2 rounded-md text-sm font-medium flex items-center">
-              <FontAwesomeIcon icon={faBook} className="mr-2 h-4 w-4" />
+              <Book className="mr-2 h-4 w-4" />
               Documentation
             </a>
             <a 
@@ -42,7 +39,7 @@ export default function Header() {
               rel="noopener noreferrer"
               className="btn-primary px-3 py-2 rounded-md text-sm font-medium flex items-center"
             >
-              <FontAwesomeIcon icon={faGithub} className="mr-2 h-4 w-4" />
+              <Github className="mr-2 h-4 w-4" />
               GitHub
             </a>
           </nav>
@@ -60,7 +57,7 @@ export default function Header() {
                   onClick={() => setOpen(false)}
                   className="text-[#1D3354]/80 hover:text-[#1D3354] px-3 py-2 rounded-md text-sm font-medium flex items-center"
                 >
-                  <FontAwesomeIcon icon={faInfo} className="mr-2 h-4 w-4" />
+                  <Info className="mr-2 h-4 w-4" />
                   About
                 </a>
                 <a 
@@ -68,7 +65,7 @@ export default function Header() {
                   onClick={() => setOpen(false)}
                   className="text-[#1D3354]/80 hover:text-[#1D3354] px-3 py-2 rounded-md text-sm font-medium flex items-center"
                 >
-                  <FontAwesomeIcon icon={faBook} className="mr-2 h-4 w-4" />
+                  <Book className="mr-2 h-4 w-4" />
                   Documentation
                 </a>
                 <a 
@@ -77,7 +74,7 @@ export default function Header() {
                   rel="noopener noreferrer"
                   className="btn-primary px-3 py-2 rounded-md text-sm font-medium inline-flex items-center"
                 >
-                  <FontAwesomeIcon icon={faGithub} className="mr-2 h-4 w-4" />
+                  <Github className="mr-2 h-4 w-4" />
                   GitHub
                 </a>
               </nav>
