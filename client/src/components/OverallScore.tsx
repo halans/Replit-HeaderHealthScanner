@@ -14,7 +14,7 @@ interface ScoreCardProps {
   icon: string;
 }
 
-import { Shield, Zap, Wrench } from "lucide-react";
+import { Shield, Zap, Wrench, Globe, Wifi } from "lucide-react";
 
 function ScoreCard({ title, score, color, implemented, total, status, icon }: ScoreCardProps) {
   const getIcon = () => {
@@ -94,6 +94,10 @@ interface OverallScoreProps {
   performanceHeaders?: HeaderDetail[];
   maintainabilityHeaders?: HeaderDetail[];
   scan?: HeaderScan;
+  httpProtocol?: {
+    protocol: string;
+    details?: string;
+  };
 }
 
 export default function OverallScore({
@@ -108,7 +112,8 @@ export default function OverallScore({
   securityHeaders,
   performanceHeaders,
   maintainabilityHeaders,
-  scan
+  scan,
+  httpProtocol
 }: OverallScoreProps) {
   const getStatusText = (score: number): string => {
     if (score >= 90) return "Excellent implementation";
@@ -161,6 +166,21 @@ export default function OverallScore({
             <p className="text-[#36382E]/70 text-sm">
               {getStatusText(overallScore)}
             </p>
+            
+            {httpProtocol && (
+              <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-200">
+                <div className="flex items-center justify-center gap-2 font-medium text-blue-800">
+                  {httpProtocol.protocol === 'HTTP/2' ? 
+                    <Wifi className="h-4 w-4 text-blue-700" /> : 
+                    <Globe className="h-4 w-4 text-blue-700" />
+                  }
+                  {httpProtocol.protocol}
+                </div>
+                {httpProtocol.details && (
+                  <div className="text-xs text-blue-600 mt-1">{httpProtocol.details}</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
         

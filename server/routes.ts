@@ -5,6 +5,7 @@ import { urlSchema, insertHeaderScanSchema } from "@shared/schema";
 import fetch from "node-fetch";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+import { exec } from "child_process";
 
 // Define the HeaderDetail type interface
 interface HeaderDetail {
@@ -17,6 +18,62 @@ interface HeaderDetail {
   description: string;
   recommendation?: string;
   link: string;
+}
+
+// Function to detect HTTP protocol version
+async function detectHttpProtocol(url: string): Promise<{ protocol: string; details?: string }> {
+  return new Promise((resolve) => {
+    // Default to HTTP/1.1 if we can't determine
+    const defaultResult = { protocol: 'HTTP/1.1' };
+    
+    try {
+      // Use curl to detect the protocol
+      exec(`curl -s -I --http2 -o /dev/null -w "%{http_version}" ${url}`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error detecting HTTP protocol: ${error.message}`);
+          return resolve(defaultResult);
+        }
+        
+        if (stderr) {
+          console.error(`Error in HTTP protocol detection: ${stderr}`);
+          return resolve(defaultResult);
+        }
+        
+        const version = stdout.trim();
+        
+        // Parse the version
+        if (version === '2') {
+          return resolve({ 
+            protocol: 'HTTP/2',
+            details: 'HTTP/2 offers improved performance through binary framing, multiplexing, header compression, and server push.'
+          });
+        } else if (version === '3') {
+          return resolve({ 
+            protocol: 'HTTP/3',
+            details: 'HTTP/3 uses QUIC for transport, offering improved performance and reliability especially on poor connections.'
+          });
+        } else if (version.startsWith('1.1')) {
+          return resolve({ 
+            protocol: 'HTTP/1.1',
+            details: 'HTTP/1.1 is widely supported but has performance limitations compared to HTTP/2 and HTTP/3.'
+          });
+        } else if (version.startsWith('1.0')) {
+          return resolve({ 
+            protocol: 'HTTP/1.0',
+            details: 'HTTP/1.0 is outdated and lacks many performance features of newer HTTP versions.'
+          });
+        } else {
+          return resolve({ 
+            protocol: `HTTP/${version}`,
+            details: 'Unknown or uncommon HTTP version detected.'
+          });
+        }
+      });
+    } catch (error) {
+      console.error('Exception in protocol detection:', error);
+      resolve(defaultResult);
+    }
+  });
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -32,6 +89,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Fetch the headers from the URL
       try {
+        // First make a request to detect HTTP protocol version
+        const protocolInfo = await detectHttpProtocol(fullUrl);
+        
+        // Now fetch the headers
         const response = await fetch(fullUrl, {
           method: 'HEAD',
           headers: {
@@ -46,7 +107,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           headers[key] = value;
         });
         
-        // Calculate scores (this would be much more detailed in a real implementation)
+        // Add protocol information to headers
+        headers['x-detected-protocol'] = protocolInfo.protocol;
+        if (protocolInfo.details) {
+          headers['x-protocol-details'] = protocolInfo.details;
+        }
+        
+        // Calculate scores with weighted importance
         const securityHeaders = calculateSecurityScore(headers);
         const performanceHeaders = calculatePerformanceScore(headers);
         const maintainabilityHeaders = calculateMaintainabilityScore(headers);
@@ -54,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check for Cloudflare headers
         const cloudflareHeaders = analyzeCloudflareHeaders(headers);
         
-        // Calculate overall score
+        // Calculate overall score with weighted importance
         const overallScore = Math.round(
           (securityHeaders.score + performanceHeaders.score + maintainabilityHeaders.score) / 3
         );
@@ -89,7 +156,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           performanceHeaders: performanceHeaders.details,
           maintainabilityHeaders: maintainabilityHeaders.details,
           cloudflareHeaders: cloudflareHeaders.details,
-          isUsingCloudflare: cloudflareHeaders.isUsingCloudflare
+          isUsingCloudflare: cloudflareHeaders.isUsingCloudflare,
+          httpProtocol: {
+            protocol: protocolInfo.protocol,
+            details: protocolInfo.details
+          }
         });
       } catch (error) {
         console.error('Error fetching URL headers:', error);
@@ -567,6 +638,7 @@ function getGrade(score: number): string {
 }
 
 // Helper function to analyze Cloudflare headers
+
 function analyzeCloudflareHeaders(headers: Record<string, string>) {
   const cloudflareHeaders: HeaderDetail[] = [
     {

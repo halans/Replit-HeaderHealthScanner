@@ -18,6 +18,10 @@ interface AnalysisResult {
   maintainabilityHeaders: HeaderDetail[];
   cloudflareHeaders?: HeaderDetail[];
   isUsingCloudflare?: boolean;
+  httpProtocol?: {
+    protocol: string;
+    details?: string;
+  };
 }
 
 export default function Home() {
@@ -104,6 +108,7 @@ export default function Home() {
             performanceHeaders={result.performanceHeaders}
             maintainabilityHeaders={result.maintainabilityHeaders}
             scan={result.scan}
+            httpProtocol={result.httpProtocol}
           />
           
           <div className="w-full mb-6">
