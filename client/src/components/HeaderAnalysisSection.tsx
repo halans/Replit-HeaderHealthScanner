@@ -344,10 +344,10 @@ export default function HeaderAnalysisSection({
     <div className="bg-white rounded-lg shadow-lg overflow-hidden border-b-4 border-[#5BC3EB] card-hover">
       <Tabs defaultValue="security">
         <div className="border-b border-[#DADAD9] bg-gradient-to-r from-[#F06449]/5 to-[#5BC3EB]/5">
-          <TabsList className="grid grid-cols-3 w-full bg-transparent p-0">
+          <TabsList className="flex w-full bg-transparent p-0 justify-between">
             <TabsTrigger 
               value="security" 
-              className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
+              className="flex-1 data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
                 data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
                 rounded-t-lg border-b-2 border-transparent"
             >
@@ -355,7 +355,7 @@ export default function HeaderAnalysisSection({
             </TabsTrigger>
             <TabsTrigger 
               value="performance" 
-              className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
+              className="flex-1 data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
                 data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
                 rounded-t-lg border-b-2 border-transparent"
             >
@@ -363,11 +363,11 @@ export default function HeaderAnalysisSection({
             </TabsTrigger>
             <TabsTrigger 
               value="maintainability" 
-              className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
+              className="flex-1 data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
                 data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 text-center text-base font-medium 
-                rounded-t-lg border-b-2 border-transparent min-w-0 truncate"
+                rounded-t-lg border-b-2 border-transparent"
             >
-              Maintainability
+              <span className="w-full text-center whitespace-nowrap">Maintainability</span>
             </TabsTrigger>
           </TabsList>
         </div>
