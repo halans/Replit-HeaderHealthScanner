@@ -43,20 +43,27 @@ export const urlSchema = z.object({
   url: z.string()
     .min(1, "Please enter a website URL")
     .transform(val => {
-      // If URL doesn't contain http:// or https://, add https://
-      if (!/^https?:\/\//i.test(val)) {
-        return `https://${val}`;
-      }
-      return val;
+      // Remove any whitespace
+      val = val.trim();
+      
+      // Remove any http:// or https:// prefix
+      val = val.replace(/^https?:\/\//i, '');
+      
+      // Remove trailing slashes
+      val = val.replace(/\/+$/, '');
+      
+      // Add https:// prefix
+      return `https://${val}`;
     })
     .refine(val => {
       try {
-        new URL(val);
-        return true;
+        const url = new URL(val);
+        // Ensure there's a valid hostname (at least one dot for TLD)
+        return url.hostname.includes('.') || url.hostname === 'localhost';
       } catch (e) {
         return false;
       }
-    }, { message: "Please enter a valid URL" })
+    }, { message: "Please enter a valid URL (e.g., example.com)" })
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

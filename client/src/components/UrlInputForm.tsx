@@ -23,7 +23,13 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
 
   function onSubmit(values: z.infer<typeof urlSchema>) {
     console.log("Form submitted with values:", values);
-    onAnalyze(values.url);
+    
+    // At this point, the URL has been validated and transformed by the schema
+    const analyzedUrl = values.url;
+    console.log("Analyze button clicked with URL:", analyzedUrl);
+    
+    // Pass the validated URL to the parent component
+    onAnalyze(analyzedUrl);
   }
 
   return (
@@ -53,9 +59,8 @@ export default function UrlInputForm({ onAnalyze, isLoading }: UrlInputFormProps
                           placeholder="example.com"
                           className="flex-1 block w-full rounded-none rounded-r-md bg-white border-[#1D3354] focus:ring-[#1D3354] focus:border-[#1D3354] py-2 px-4 text-[#1D3354]"
                           onChange={(e) => {
-                            // Remove any https:// or http:// prefix for better UX
-                            const value = e.target.value.replace(/^https?:\/\//i, '');
-                            field.onChange(value);
+                            // We'll just pass the raw value and let the schema handle validation
+                            field.onChange(e.target.value);
                           }}
                           value={field.value}
                           onBlur={field.onBlur}

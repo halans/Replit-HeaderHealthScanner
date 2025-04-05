@@ -40,16 +40,34 @@ export async function apiRequest(
 ): Promise<Response> {
   console.log(`Making API request: ${method} ${url}`, data);
   
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
 
-  console.log(`API response status: ${res.status}`);
-  await throwIfResNotOk(res);
-  return res;
+    console.log(`API response status: ${res.status}`);
+    
+    // For better debugging, log response body on error
+    if (!res.ok) {
+      try {
+        // Clone the response to read it twice
+        const responseClone = res.clone();
+        const errorBody = await responseClone.text();
+        console.error(`API error response: ${errorBody}`);
+      } catch (bodyError) {
+        console.error('Could not read error response body:', bodyError);
+      }
+    }
+    
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

@@ -50,7 +50,22 @@ export default function Home() {
   // Handle analyze button click
   const handleAnalyze = (url: string) => {
     console.log("Analyze button clicked with URL:", url);
-    analyzeHeadersMutation.mutate(url);
+    
+    try {
+      // Make sure the URL has been validated before passing it to the mutation
+      const urlObject = new URL(url);
+      console.log(`Validating URL: Hostname: ${urlObject.hostname}, Protocol: ${urlObject.protocol}`);
+      
+      // Make API request with the validated URL
+      analyzeHeadersMutation.mutate(url);
+    } catch (error) {
+      console.error("URL validation failed:", error);
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid website URL (e.g., example.com)",
+        variant: "destructive",
+      });
+    }
   };
 
   // Generate a summary if we have a result
