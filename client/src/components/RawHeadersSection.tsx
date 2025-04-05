@@ -176,8 +176,9 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         <Button 
           onClick={copyHeaders}
           className="btn-secondary shadow-md"
+          aria-label="Copy all headers to clipboard"
         >
-          <Copy className="h-4 w-4 mr-2" />
+          <Copy className="h-4 w-4 mr-2" aria-hidden="true" />
           Copy All Headers
         </Button>
       </div>
@@ -188,19 +189,19 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
         onValueChange={(value) => setActiveTab(value)}
       >
         <div className="flex items-center justify-between mb-3">
-          <TabsList className="mb-2">
+          <TabsList className="mb-2" aria-label="Header display options">
             <TabsTrigger value="formatted" className="flex items-center">
-              <Info className="h-4 w-4 mr-2" />
+              <Info className="h-4 w-4 mr-2" aria-hidden="true" />
               Formatted
             </TabsTrigger>
             <TabsTrigger value="raw" className="flex items-center">
-              <Code className="h-4 w-4 mr-2" />
+              <Code className="h-4 w-4 mr-2" aria-hidden="true" />
               Raw Text
             </TabsTrigger>
           </TabsList>
-          <span className="flex items-center text-[#36382E]/70 text-xs">
-            <Clock className="h-3 w-3 mr-1" />
-            {headerCount} headers found
+          <span className="flex items-center text-[#36382E]/70 text-xs" aria-live="polite">
+            <Clock className="h-3 w-3 mr-1" aria-hidden="true" />
+            <span>{headerCount} headers found</span>
           </span>
         </div>
         
@@ -209,16 +210,16 @@ export default function RawHeadersSection({ headers }: RawHeadersSectionProps) {
             <div className="flex items-center gap-3">
               <span>HTTP RESPONSE HEADERS</span>
               <span className="px-2 py-1 text-xs rounded-full bg-[#1D3354] text-white">
-                Showing: <span className="font-semibold" data-tab-indicator>Formatted View</span>
+                Showing: <span className="font-semibold" data-tab-indicator aria-live="polite">Formatted View</span>
               </span>
             </div>
           </div>
           
-          <TabsContent value="formatted" className="whitespace-pre-wrap break-all m-0 p-0">
+          <TabsContent value="formatted" className="whitespace-pre-wrap break-all m-0 p-0" role="tabpanel" aria-labelledby="formatted-tab">
             {renderHeaders()}
           </TabsContent>
           
-          <TabsContent value="raw" className="m-0 p-0">
+          <TabsContent value="raw" className="m-0 p-0" role="tabpanel" aria-labelledby="raw-tab">
             {renderRawHeaders()}
           </TabsContent>
         </div>

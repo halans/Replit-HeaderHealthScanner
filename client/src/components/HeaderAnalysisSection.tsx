@@ -46,11 +46,11 @@ function HeaderItem({ header }: HeaderItemProps) {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'implemented':
-        return <CheckCircle className="text-green-500 h-5 w-5 flex-shrink-0" />;
+        return <CheckCircle className="text-green-500 h-5 w-5 flex-shrink-0" aria-hidden="true" />;
       case 'warning':
-        return <AlertTriangle className="text-yellow-500 h-5 w-5 flex-shrink-0" />;
+        return <AlertTriangle className="text-yellow-500 h-5 w-5 flex-shrink-0" aria-hidden="true" />;
       case 'missing':
-        return <AlertCircle className="text-red-500 h-5 w-5 flex-shrink-0" />;
+        return <AlertCircle className="text-red-500 h-5 w-5 flex-shrink-0" aria-hidden="true" />;
       default:
         return null;
     }
@@ -129,7 +129,11 @@ function HeaderItem({ header }: HeaderItemProps) {
       onOpenChange={setIsOpen}
       className="border border-[#DADAD9] rounded-lg mb-4 overflow-hidden transition-all shadow-sm hover:shadow-md"
     >
-      <CollapsibleTrigger className="flex items-center justify-between bg-white px-5 py-4 w-full text-left">
+      <CollapsibleTrigger 
+        className="flex items-center justify-between bg-white px-5 py-4 w-full text-left"
+        aria-expanded={isOpen}
+        aria-label={`${header.name} details - ${header.status} - ${header.importance} importance`}
+      >
         <div className="flex items-center space-x-3">
           <div className={`p-2 rounded-full ${
             header.status === 'implemented' ? 'bg-green-100 text-green-700' : 
@@ -146,7 +150,7 @@ function HeaderItem({ header }: HeaderItemProps) {
             </div>
           </div>
         </div>
-        <div className={`p-2 rounded-full bg-[#EDE6E3] transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+        <div className={`p-2 rounded-full bg-[#EDE6E3] transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true">
           <ChevronDown className="text-[#36382E] h-5 w-5" />
         </div>
       </CollapsibleTrigger>
@@ -213,9 +217,10 @@ function HeaderItem({ header }: HeaderItemProps) {
             target="_blank" 
             rel="noopener noreferrer" 
             className="inline-flex items-center px-4 py-2 rounded-md bg-[#5BC3EB] text-white font-medium hover:bg-[#5BC3EB]/90 transition-colors shadow-sm"
+            aria-label={`${header.name} documentation (opens in a new tab)`}
           >
             <span>{header.name} documentation</span>
-            <ExternalLink className="ml-2 h-4 w-4" />
+            <ExternalLink className="ml-2 h-4 w-4" aria-hidden="true" />
           </a>
         </div>
       </CollapsibleContent>
@@ -229,11 +234,11 @@ function RecommendationItem({ icon, level, text }: { icon: string, level: string
   const getIcon = () => {
     switch (icon) {
       case 'critical':
-        return <AlertCircle className="text-red-500 h-5 w-5 flex-shrink-0" />;
+        return <AlertCircle className="text-red-500 h-5 w-5 flex-shrink-0" aria-hidden="true" />;
       case 'important':
-        return <AlertTriangle className="text-yellow-500 h-5 w-5 flex-shrink-0" />;
+        return <AlertTriangle className="text-yellow-500 h-5 w-5 flex-shrink-0" aria-hidden="true" />;
       default:
-        return <Info className="text-blue-500 h-5 w-5 flex-shrink-0" />;
+        return <Info className="text-blue-500 h-5 w-5 flex-shrink-0" aria-hidden="true" />;
     }
   };
   
@@ -319,7 +324,7 @@ function HeaderCategory({ title, description, headers }: HeaderCategoryProps) {
         <div className="mt-8 bg-white p-6 rounded-lg border border-[#DADAD9] shadow-md">
           <h3 className="text-xl font-bold text-[#36382E] mb-4 flex items-center">
             <div className="p-2 bg-[#F06449] text-white rounded-full mr-3">
-              <AlertCircle className="h-5 w-5" />
+              <AlertCircle className="h-5 w-5" aria-hidden="true" />
             </div>
             {title} Recommendations
           </h3>
@@ -396,12 +401,16 @@ export default function HeaderAnalysisSection({
     <div className="bg-white rounded-lg shadow-lg overflow-hidden border-b-4 border-[#5BC3EB] card-hover">
       <Tabs defaultValue="security">
         <div className="border-b border-[#DADAD9] bg-gradient-to-r from-[#F06449]/5 to-[#5BC3EB]/5">
-          <TabsList className="bg-transparent border-b-0 p-3 w-full flex justify-start">
+          <TabsList 
+            className="bg-transparent border-b-0 p-3 w-full flex justify-start" 
+            aria-label="Header analysis categories"
+          >
             <TabsTrigger 
               value="security" 
               className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
                 data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
                 rounded-t-lg border-b-2 border-transparent mr-2"
+              id="security-tab"
             >
               Security
             </TabsTrigger>
@@ -410,6 +419,7 @@ export default function HeaderAnalysisSection({
               className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
                 data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
                 rounded-t-lg border-b-2 border-transparent mr-2"
+              id="performance-tab"
             >
               Performance
             </TabsTrigger>
@@ -418,6 +428,7 @@ export default function HeaderAnalysisSection({
               className="data-[state=active]:border-[#1D3354] data-[state=active]:text-[#1D3354] data-[state=active]:font-bold
                 data-[state=active]:border-b-2 data-[state=active]:bg-white py-3 px-6 text-base font-medium 
                 rounded-t-lg border-b-2 border-transparent"
+              id="maintainability-tab"
             >
               Maintainability
             </TabsTrigger>
@@ -425,7 +436,7 @@ export default function HeaderAnalysisSection({
         </div>
 
         <div className="p-8">
-          <TabsContent value="security" className="m-0 p-0">
+          <TabsContent value="security" className="m-0 p-0" role="tabpanel" aria-labelledby="security-tab">
             <HeaderCategory 
               title="Security" 
               description="Security headers protect your site from various attacks and vulnerabilities. Analysis is based on SecurityHeaders.com and Mozilla Observatory guidelines."
@@ -433,7 +444,7 @@ export default function HeaderAnalysisSection({
             />
           </TabsContent>
           
-          <TabsContent value="performance" className="m-0 p-0">
+          <TabsContent value="performance" className="m-0 p-0" role="tabpanel" aria-labelledby="performance-tab">
             <HeaderCategory 
               title="Performance" 
               description="Performance headers help optimize how browsers load and cache your content, improving loading times and user experience."
@@ -441,7 +452,7 @@ export default function HeaderAnalysisSection({
             />
           </TabsContent>
           
-          <TabsContent value="maintainability" className="m-0 p-0">
+          <TabsContent value="maintainability" className="m-0 p-0" role="tabpanel" aria-labelledby="maintainability-tab">
             <HeaderCategory 
               title="Maintainability" 
               description="Maintainability headers help developers understand and debug your site, as well as provide better interoperability with various clients."
