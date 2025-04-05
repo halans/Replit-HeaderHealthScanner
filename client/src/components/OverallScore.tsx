@@ -196,7 +196,10 @@ export default function OverallScore({
           <div className="mt-8">
             <h3 className="text-xl font-bold text-[#36382E] mb-4">Summary</h3>
             <div className="bg-[#EDE6E3] p-6 rounded-md border-l-4 border-[#5BC3EB] shadow-sm">
-              <p className="text-[#36382E] leading-relaxed">{summary}</p>
+              <p 
+                className="text-[#36382E] leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: summary }}
+              />
             </div>
           </div>
         </div>
