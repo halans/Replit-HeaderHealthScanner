@@ -4,11 +4,11 @@
 
 @layer base {
   :root {
-    --color-poppy: #D64045;
-    --color-mint-green: #E9FFF9;
-    --color-non-photo-blue: #9ED8DB;
-    --color-ucla-blue: #467599;
     --color-dark-blue: #1D3354;
+    --color-non-photo-blue: #9ED8DB;
+    --color-mint-green: #E9FFF9;
+    --color-poppy: #D64045;
+    --color-ucla-blue: #467599;
   }
 
   * {
@@ -16,7 +16,7 @@
   }
 
   body {
-    @apply font-sans antialiased bg-[#E9FFF9] text-[#1D3354];
+    @apply font-sans antialiased bg-white text-[#1D3354];
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -26,11 +26,11 @@
 
 @layer components {
   .gradient-heading {
-    @apply bg-gradient-to-r from-[#D64045] to-[#467599] bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[#1D3354] to-[#9ED8DB] bg-clip-text text-transparent;
   }
   
   .header-icon {
-    @apply rounded-full bg-gradient-to-br from-[#D64045] to-[#467599] p-2 text-white;
+    @apply rounded-full bg-gradient-to-br from-[#1D3354] to-[#9ED8DB] p-2 text-white;
   }
   
   .card-hover {
@@ -38,10 +38,10 @@
   }
   
   .btn-primary {
-    @apply bg-gradient-to-r from-[#D64045] to-[#D64045]/80 text-white hover:from-[#D64045]/90 hover:to-[#D64045]/70;
+    @apply bg-gradient-to-r from-[#1D3354] to-[#1D3354]/80 text-white hover:from-[#1D3354]/90 hover:to-[#1D3354]/70;
   }
   
   .btn-secondary {
-    @apply bg-gradient-to-r from-[#467599] to-[#467599]/80 text-white hover:from-[#467599]/90 hover:to-[#467599]/70;
+    @apply bg-gradient-to-r from-[#9ED8DB] to-[#9ED8DB]/80 text-white hover:from-[#9ED8DB]/90 hover:to-[#9ED8DB]/70;
   }
 }
